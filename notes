@@ -1,0 +1,130 @@
+* WORK IN PROGRESS:
+  Fix bug with ^C/^V, where if a copy is made, then all boxes deleted,
+  doing a 'paste' will crash. This is bc we kept a copy of pointers,
+  not boxes themselves.
+
+  In doing this fix, had to make an array of boxes in both
+  Fl_Op* and test-app/My*.
+
+  Did the Fl_Op* stuff, had to add operator= methods to
+  box, button, etc. for this to work. That compiles OK.
+
+  I YAM HERE
+  *** While doing the test-app/My* stuff, ran into incompatibility
+  between an array of MyBox* and Fl_OpBox*.
+
+  Changing things around so Fl_OpDesk::CopyConnections()
+  doesn't have a mass of code in it, and just calls Fl_OpBox::CopyConnections()
+  for each box. Then the MyBox stuff can call the same, invoking
+  Fl_OpBox::mybox->CopyConnections(), since copying connections
+  can be done at the Fl_Op level.
+
+  	JUST MOVED THE CODE FROM Fl_OpDesk::CopyConnections()
+	OVER TO Fl_Box::CopyConnections.
+
+* Allow input buttons to be constant values.
+  Click the button pops a dialog that lets one type a value.
+  The value is then shown 'floating' to the left of the button
+  in place of an input connection.
+
+* WHAT OUR WIDGETS SHOULD HANDLE
+  > Handle graphic representations of boxes and their buttons
+  > Handle connect lines between buttons
+  > Simple button-to-button access (ie. one button can get you
+    to other button connected to it)
+  > Adding/removing buttons
+  > zooming/scaling/scrolling desk
+  > automatic tooltips
+
+* WHAT OUR WIDGETS SHOULD *NOT* HANDLE
+  > Popup menus over buttons/boxes (let user handle right click events)
+  > Variable type checking (we provide events/callback app can react to)
+  > Code gen (app can walk our tree via the buttons)
+  > Load/Save boxes (app can determine xywh, titles, own data, etc)
+
+* USER SHOULD BE ABLE TO DERIVE CLASS FROM OpButton
+  ..so that they can handle own data on create/destroy,
+  and handle() events (connect attempts, dragover, clicks, codegen..)
+
+* USER CAN HANDLE CODEGEN STUFF WITH THEIR OWN CODE
+
+* When box 'selected', OpBox should draw a rectangle around perimiter
+  (similar to how connection lines draw between boxes in context of desk)
+
+* When creating buttons, box handles their xywh positioning automatically.
+
+* App can enlarge/shrink OpBox, which should keep buttons same size
+  allowing center to expand, with image staying 'centered'.
+
+* Connections are managed in several ways:
+
+	> The OpDesk maintains a list of all button-to-button connections
+	  in its connects[] vector array. This is useful to quickly walk
+	  all the interconnections for saving layouts, and drawing connection
+	  lines.
+
+	> Each OpButton keeps track of the OpButton(s) it's connected to
+	  in the connected_to[] vector array.
+
+
+* EXAMPLE:
+                                                                    Fl_Group (OpBox)
+                                                                   /
+   _________________                   ---------------------------/
+   |    Add_24     |                  |                           |
+   -----------------                  |  ---                 ---  |
+   | A |       |   |                  | |   |               |   | |
+   |---|       |Out|                  | |   |               |   | |
+   | B |       |   |                  |  ---\                ---\ |
+   -----------------                  |      \                   \|
+                                       -------\-------------------\
+                                               \___________________\__ Fl_Button (OpButton)
+   class MyAddBox : public OpBox {
+       OpInputButton *a;
+       OpInputButton *b;
+       OpOutputButton *out;
+       MyAddBox(X,Y,W,H,T,IMG) : OpBox(X,Y,W,H,T,IMG) {
+            // create codegen data, buttons, tooltips, add self to desk..
+	   tooltip("This is an 'add' box");		// [OPTIONAL] shows up over top of widget
+	   a = new OpInputButton("A", this);		// create 'a' input button, add to self
+	   b = new OpInputButton("B", this);		// create 'b' input button, add to self
+	   out = new OpOutputButton("out", this);
+       }
+       // HANDLE EVENTS TO BOX
+       int handle(int e) {
+         case FL_PUSH, FL_RELEASE:		// handle clicks on box
+	    break;
+	 case FL_ENTER/DRAG/LEAVE/FOCUS:	// mouse entered/left box (return 0 if not interested)
+	    break;
+       }
+    };
+    class MyInputButton : public OpInputButton {
+	MyInputButton(T) {
+	    // associate custom codegen data, varname
+	}
+        // HANDLE EVENTS TO *BUTTON*
+        int handle(int e) {
+	    case FL_PUSH, FL_RELEASE:		// handle clicks on box
+	        break;
+	    case FL_ENTER/DRAG/LEAVE/FOCUS:	// handle someone about to drop/giving up a connection
+	        // do tests here to see if incoming connection from 'otherbut' ok
+	        break;
+	}
+        // HANDLE 'CONNECTION EVENTS' TO BUTTON
+	int ConnectEvent(int e) {
+            case OP_CONNECT_INBOUND:		// someone about to drop a connection on us
+            case OP_CONNECT_OUTBOUND:		// someone giving up on a connection to us
+	        // IN: can gray out button to indicate rejection
+	        // OUT: can un-gray button to restore box to normal
+            case OP_CONNECT:			// someone made connection to us
+	        // Can accept (return(1)) or reject (return(0);)
+	        break;
+	}
+    };
+
+
+// STL: FOR INFORMATION ONLY
+//    vector<OpButton*>::iterator location = 
+//	find(connected_to.begin(), connected_to.end(), but);
+//    return(location != connected_to.end() ? 1 : 0);
+

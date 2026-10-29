@@ -1,0 +1,90 @@
+next_boxid 3
+linestyle 2
+# add_1
+box "add"
+{
+    label "add_1"
+    color c0c0ff00
+    labelcolor 40404000
+    xy 120 201
+    select 1
+    in "A"
+    {
+        dtype int
+        const 100
+    }
+    in "B"
+    {
+        dtype int
+        const 200
+    }
+    in "C"
+    {
+        dtype int
+        const 300
+    }
+    out "OUT"
+    {
+        dtype int
+    }
+    src begin
+    {
+	># Box: '${BoxTitle}'
+	>${OUT} = ${A} + ${B} + ${C};
+	>printf("\${OUT}: %d\n",${OUT});   # print result
+	>
+    }
+}
+# strcat_2
+box "strcat"
+{
+    label "strcat_2"
+    color c0c0c000
+    labelcolor 40404000
+    xy 444 186
+    select 1
+    in "A"
+    {
+        dtype int|float|string
+        const "The result is: "
+    }
+    in "B"
+    {
+        dtype int|float|string
+        const "Bbb"
+    }
+    out "OUT"
+    {
+        dtype string
+    }
+    src begin
+    {
+	># Box: '${BoxTitle}'
+	>${OUT} = ${A} . ${B};
+	>printf("\${OUT}: '%s'\n",${OUT});   # print result
+	>
+    }
+}
+# print_3
+box "print"
+{
+    label "print_3"
+    color c0c0c000
+    labelcolor 40404000
+    xy 445 297
+    select 1
+    in "IN"
+    {
+        dtype int|float|string
+        const "This is a test"
+    }
+    src begin
+    {
+	># Box: '${BoxTitle}'
+	>print "${IN}\n";
+	>
+    }
+}
+# 2 CONNECTIONS
+connect 0xf0d0a000 add_1(OUT)	strcat_2(B)
+connect 0xf0d0a000 strcat_2(OUT)	print_3(IN)

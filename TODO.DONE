@@ -1,0 +1,65 @@
+* Copy operations
+
+  > (DONE) Unique box names need to be made during copy
+
+  > (DONE) Need to copy /connections/ too (as long as connections
+    are to the new copies)
+
+* Copy + Delete opboxes.
+  Check copy ctor and assignment (operator=)
+  Make sure FLTK correctly handles delete and copy.
+
+* WIP: Layout load/save to file
+  > (DONE) "Save" + "Save As"  with file chooser
+  > New, Open, with file chooser, loads new scene
+
+* Copy operations -- where to start
+
+  OK, so we've got copy constructors for OpBox and OpDesk,
+  and a ^C/^V operation in OpDesk triggers the copy operations
+  just fine.
+
+  But when we derive classes like MyBox and MyButton, it gets
+  tricky what those copy constructors should do. eg. MyBox's
+  copy constructor needs to tell OpBox to make a dupe:
+
+  	MyBox::MyBox(const MyBox &o) : OpBox(o) {
+	}
+
+  The problem here is the OpBox(o) copy ctor is going to try
+  to create copies of OpButtons, instead of MyButtons.
+
+  Seems like we need a way to take over the OpBox copy constructor
+  somehow, so that we can create MyButton instances, instead of
+  letting OpBox create OpButton instances. eg:
+
+      OpBox                      MyBox         
+      -------------------        -------------------------------------- 
+     :   -------------   |      |                                      |
+     :  | OpButton    |  |      |   OpBox                              |
+     :   -------------   |      |   --------------------------------   |
+     :   -------------   |      |  |                                |  |
+     :  | OpButton    |  |      |  |    MyButton                    |  |
+     :   -------------   |      |  |    ------------------------    |  |
+     :___________________|      |  |   |   --------------       |   |  |
+                                |  |   |  | OpButton     |      |   |  |
+				|  |   |   --------------       |   |  |
+                                |  |    ------------------------    |  |
+                                |  |                                |  |
+                                |  |    MyButton                    |  |
+                                |  |    ------------------------    |  |
+                                |  |   |   --------------       |   |  |
+                                |  |   |  | OpButton     |      |   |  |
+                                |  |   |   --------------       |   |  |
+                                |  |    ------------------------    |  |
+                                |  |                                |  |
+
+   Maybe OpBox's copy constructor should call a virtual method CopyButtons()
+   to handle copying the OpButtons, so that MyBox can override it to make
+   copies of 'MyButtons' instead.
+
+* Make copy constructors for OpButton, OpBox, OpConnect
+  so that groups of boxes can be copied.
+
+
+

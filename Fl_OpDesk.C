@@ -28,6 +28,9 @@ Fl_OpDesk::Fl_OpDesk(int X,int Y,int W,int H,const char* L) : Fl_Scroll(X,Y,W,H,
 ///
 Fl_OpDesk::~Fl_OpDesk() {
     DisconnectAll();
+    // Child destructors use our bookkeeping vectors, so delete the children
+    // before those vectors are destroyed and before entering ~Fl_Group().
+    Fl_Scroll::clear();	// preserve Fl_Scroll's member scrollbars
 }
 
 /// INTERNAL: Draws a line between two points with floating-point x/y coordinates.
@@ -623,7 +626,7 @@ int Fl_OpDesk::Disconnect(Fl_OpBox *box) {
         Fl_OpButton *dst = connects[t].GetDstButton();
 	if ( !src || !dst ) continue;
 	if ( src->GetOpBox() == box || dst->GetOpBox() == box ) {
-	    Disconnect(src,dst);
+	    count += Disconnect(src,dst);
 	    --t;
 	}
     }
@@ -677,6 +680,8 @@ void Fl_OpDesk::DeleteBox(Fl_OpBox *box) {
     remove(box);		// fltk: remove from group
     Fl::delete_widget(box);	// fltk: schedule delete of widget
     _RemoveBox(box);		// remove from boxes and clipboard
+    // The desk may be destroyed before FLTK processes the deferred deletion.
+    box->opdesk = 0;
     redraw();
 }
 
@@ -792,6 +797,9 @@ void Fl_OpDesk::CopyConnections(std::vector<Fl_OpBox*> origboxes, std::vector<Fl
             for ( size_t ci=0; ci<srcbut_orig->GetTotalConnectedButtons(); ci++ ) {
                 Fl_OpButton *dstbut_orig = srcbut_orig->GetConnectedButton(ci); // original's dst button
                 Fl_OpConnect *origcon = srcbut_orig->GetConnection(ci);         // original's connection
+                if ( !origcon ) continue;
+                // Connect() can reallocate connects and invalidate origcon.
+                Fl_OpConnect origattrs(*origcon);
                 Fl_OpBox *srcbox_orig = srcbut_orig->GetOpBox();                // original's src box
                 Fl_OpBox *dstbox_orig = dstbut_orig->GetOpBox();                // original's dst box
 
@@ -825,7 +833,7 @@ void Fl_OpDesk::CopyConnections(std::vector<Fl_OpBox*> origboxes, std::vector<Fl
                     {
                         // Copy in the attributes of the orig connection to the new one
                         Fl_OpConnect *copycon = GetLastOpConnect();
-                        if ( copycon ) copycon->CopyAttributes(origcon);
+                        if ( copycon ) copycon->CopyAttributes(&origattrs);
                         break;
                     }
 
@@ -898,7 +906,8 @@ void Fl_OpDesk::Clear() {
     // DeleteSelected();
     // boxes.clear();
     // connects.clear();
-    window()->redraw();
+    if ( window() ) window()->redraw();
+    else redraw();
 }
 
 /// Find a box given its label name, \p lname.

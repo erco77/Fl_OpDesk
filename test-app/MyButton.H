@@ -39,6 +39,7 @@ public:
     // CTORS
     MyButton(const char *buttname, Fl_OpButtonType io, DataType dtype);
     MyButton(const MyButton &o);
+    ~MyButton();
 
     // DATA TYPES/CONSTANTS
     void         SetConstantValue(const char *val);

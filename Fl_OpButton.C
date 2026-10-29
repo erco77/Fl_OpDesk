@@ -18,6 +18,7 @@ Fl_OpButton::Fl_OpButton(const char *name, Fl_OpButtonType io) : Fl_Button(0,0,1
 	case FL_OP_OUTPUT_BUTTON: GetOpBox()->_AddOutputButton(this); break;
     }
     button_type = io;
+    dragging = 0;
     connected_to.clear();
 
     // Inherit parent opbox colors
@@ -36,7 +37,10 @@ Fl_OpButton::Fl_OpButton(const char *name, Fl_OpButtonType io) : Fl_Button(0,0,1
 ///    Handles disconnecting all connections.
 ///
 Fl_OpButton::~Fl_OpButton() {
-    if ( GetOpBox() ) { GetOpBox()->_RemoveButton(this); }
+    if ( GetOpBox() ) {
+        DisconnectAll();
+        GetOpBox()->_RemoveButton(this);
+    }
 }
 
 /// Fl_OpButton copy constructor. Makes a "copy" of Fl_OpButton \p o.

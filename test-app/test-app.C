@@ -215,6 +215,10 @@ class App : public Fl_Double_Window {
 	win->show();
 	Fl::wait(.10);
 	FILE *fp = popen(cmd.c_str(), "r");
+	if ( fp == NULL ) {
+            fl_alert("Cannot run command: %s", strerror(errno));
+            return;
+        }
 	char linebuf[4096];
 	while ( fgets(linebuf, sizeof(linebuf)-1, fp) != NULL ) {
 	    buf->append(linebuf);
@@ -247,8 +251,12 @@ class App : public Fl_Double_Window {
 	    fl_message("%s: %s", tmpfile.c_str(), strerror(errno));
 	    return;
 	}
-	fwrite(code.c_str(), 1, code.size(), fp);
-	fclose(fp);
+        int failed = (fwrite(code.c_str(), 1, code.size(), fp) != code.size());
+        if ( fclose(fp) != 0 ) failed = 1;
+        if ( failed ) {
+            fl_alert("Cannot write '%s': %s", tmpfile.c_str(), strerror(errno));
+            return;
+        }
 
 	// RUN COMMAND WITH OUTPUT IN WINDOW
 	std::string cmd;
@@ -430,15 +438,18 @@ public:
 		     std::string(strerror(errno));
 	    return(-1);
 	}
-	if ( mydesk->SaveLayout(fp) != 0 ) {
+        int failed = (mydesk->SaveLayout(fp) != 0);
+        int save_errno = failed ? errno : 0;
+        if ( fclose(fp) != 0 ) {
+            failed = 1;
+            save_errno = errno;
+        }
+	if ( failed ) {
 	    errmsg = std::string("Failed while writing '") +
-		     std::string(layout_filename) +
-		     std::string(": ") + 
-		     std::string(strerror(errno));
-	    fclose(fp);
+		     filename + std::string("': ") +
+		     std::string(strerror(save_errno));
 	    return(-1);
 	}
-	fclose(fp);
 	return(0);
     }
 
@@ -468,7 +479,7 @@ public:
 	    // Save file
 	    std::string errmsg;
 	    if ( LayoutSaveFilename(layout_filename, errmsg) < 0 ) {
-		fl_alert((char*)errmsg.c_str());
+		fl_alert("%s", errmsg.c_str());
 	    }
 	}
 	mydesk->redraw();
@@ -478,11 +489,12 @@ public:
     // Save box layout
     void LayoutSave() {
         if ( layout_filename == "" ) {		// no filename already? Get one!
-	    if ( LayoutSaveAs() < 0 ) return;	// user cancel?
+	    LayoutSaveAs();
+            return;
         }
 	std::string errmsg;
 	if ( LayoutSaveFilename(layout_filename, errmsg) < 0 ) {
-	    fl_alert((char*)errmsg.c_str());
+	    fl_alert("%s", errmsg.c_str());
 	}
     }
 
@@ -543,7 +555,7 @@ public:
 	    mydesk->Clear();
 	    std::string errmsg;
 	    if ( LayoutLoadFilename(layout_filename.c_str(), errmsg) < 0 ) {
-		fl_alert((char*)errmsg.c_str());
+		fl_alert("%s", errmsg.c_str());
 	    }
 	}
 	return(0);
@@ -662,7 +674,7 @@ public:
 	mydesk->Clear();
 	std::string errmsg;
 	if ( LayoutLoadFilename(filename, errmsg) < 0 ) {
-	    fl_alert((char*)errmsg.c_str());
+	    fl_alert("%s", errmsg.c_str());
 	    return(-1);
 	}
 	return(0);

@@ -27,11 +27,13 @@ class MyBox : public Fl_OpBox {
 public:
     // CTOR
     MyBox(int X,int Y,int W,int H,const char *L=0) : Fl_OpBox(X,Y,W,H,L) {
+        traversed = 0;
         name = std::string(L ? L : "unknown");
         AssignUniqueFullName();
 	infodialog = new MyBoxInfoDialog();
     }
     MyBox(const MyBox& o);
+    ~MyBox();
     void CopyButtons(const MyBox& o);
 
     // SOURCE CODE

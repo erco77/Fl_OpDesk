@@ -181,15 +181,15 @@ class Fl_OpDesk : public Fl_Scroll {
     std::vector<Fl_OpConnect> connects;	// our array of all button interconnects
     std::vector<Fl_OpBox*> boxes;	// boxes on desk
 
-    // Clipboard
-    std::vector<Fl_OpBox*> box_clipboard;               // copy/paste clipboard for Fl_OpBox's
-
     // Connection dragging
     char dragging;			// on/off flag: 1=dragging, 0=not
     int dragging_x1, dragging_y1,	// when dragging=1, these contain the two
         dragging_x2, dragging_y2;	// points to draw a connection line between.
 
 protected:
+    // Shared with subclasses so deletion can remove every clipboard entry.
+    std::vector<Fl_OpBox*> box_clipboard;
+
     // PROTECTED METHODS
     // Drawing..
     void DrawLine(float x1, float y1, float x2, float y2) const;

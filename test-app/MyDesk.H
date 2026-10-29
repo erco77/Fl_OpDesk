@@ -12,7 +12,6 @@
 //    Our app derives from the Fl_OpDesk widget to augment it with our app-specific code.
 //
 class MyDesk : public Fl_OpDesk {
-    std::vector<MyBox*> box_clipboard;  // copy/paste clipboard for MyBox's
     int next_boxid;			// next box id#
 
     // Fl_OpDesk calls this virtual when connection errors occur.

@@ -22,6 +22,9 @@ Fl_OpBox::Fl_OpBox(int X,int Y,int W,int H,const char*L) : Fl_Group(X,Y,W,H,L) {
     min_boxh   = H;
     min_conlen = 20;
     selected   = 0;
+    eventxy[0] = eventxy[1] = 0;
+    dragging = 0;
+    inbutt_w = outbutt_w = min_buttw;
     box(FL_UP_BOX);
     align(FL_ALIGN_INSIDE|FL_ALIGN_CENTER|FL_ALIGN_TOP);	// center title inside box's 'titlebar'
     end();
@@ -33,8 +36,10 @@ Fl_OpBox::Fl_OpBox(int X,int Y,int W,int H,const char*L) : Fl_Group(X,Y,W,H,L) {
 Fl_OpBox::~Fl_OpBox() {
     if ( GetOpDesk() ) {
 	GetOpDesk()->Disconnect(this);
+        GetOpDesk()->_RemoveBox(this);
     }
-    GetOpDesk()->_RemoveBox(this);	// unregister box from desk
+    // Delete buttons while their bookkeeping vectors are still alive.
+    Fl_Group::clear();
 }
 
 /// Fl_OpBox copy constructor. Makes a "copy" of Fl_OpBox \p o.
@@ -415,7 +420,7 @@ int Fl_OpBox::GetIndexForButton(Fl_OpButton *but) const {
     for ( size_t t=0; t<inputs.size(); t++ ) {
         if ( but == inputs[t] ) return(t);
     }
-    for ( size_t t=0; t<inputs.size(); t++ ) {
+    for ( size_t t=0; t<outputs.size(); t++ ) {
         if ( but == outputs[t] ) return(t+inputs.size());
     }
     return(-1);
@@ -426,7 +431,7 @@ int Fl_OpBox::FindButtonByPtr(Fl_OpButton *but) const {
     for ( size_t t=0; t<inputs.size(); t++ ) {
         if ( but == inputs[t] ) return(1);
     }
-    for ( size_t t=0; t<inputs.size(); t++ ) {
+    for ( size_t t=0; t<outputs.size(); t++ ) {
         if ( but == outputs[t] ) return(1);
     }
     return(0);

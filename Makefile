@@ -29,7 +29,7 @@ foo: foo.C
 	$(CXX) ${INC} ${CXXFLAGS} foo.C $(FLTKIMAGELIBS) $(LDFLAGS) -o $@
 
 clean:
-	-rm -f *.o test-OpDesk 2> /dev/null
+	-rm -f *.o test-OpDesk regression/test-memory 2> /dev/null
 	-rm -f *.obj 2> /dev/null
 	-rm -f *.exe 2> /dev/null
 	-rm -f *.manifest 2> /dev/null
@@ -42,6 +42,15 @@ clean:
 
 docs: FORCE
 	( cd documentation; make docs )
+
+# Headless regression checks. CXXFLAGS may include sanitizer options.
+check: FORCE
+	${CXX} ${CXXFLAGS} ${INC} ${FLTKCXXFLAGS} -Itest-app \
+		regression/test-memory.C Fl_OpDesk.C Fl_OpBox.C Fl_OpButton.C \
+		test-app/MyDesk.C test-app/MyBox.C test-app/MyButton.C \
+		test-app/MyConstantDialog.C test-app/MyBoxInfoDialog.C test-app/Subs.C \
+		${FLTKIMAGELIBS} ${LDFLAGS} -o regression/test-memory
+	./regression/test-memory
 
 # For releases of Fl_OpDesk
 tar: FORCE

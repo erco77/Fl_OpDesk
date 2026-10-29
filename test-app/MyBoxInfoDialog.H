@@ -85,6 +85,7 @@ public:
 	}
 	scroll->end();
 	resizable(this);
+        end();
     }
     // Add a button to the dialog
     void AddButton(MyButton *but) {

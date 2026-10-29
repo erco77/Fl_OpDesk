@@ -22,6 +22,10 @@ MyButton::MyButton(const MyButton &o) : Fl_OpButton(o.label(), o.GetButtonType()
     callback(MyButtonCallback, (void*)this);
 }
 
+MyButton::~MyButton() {
+    delete const_dialog;
+}
+
 // Check if OK to connect to another button.
 //    Returns 0 if OK, -1 on error with errmsg set to reason.
 //
@@ -152,7 +156,7 @@ int MyButton::SaveLayout(FILE *fp) {
 	fprintf(fp, "        dtype %s\n", GetDataTypeStr().c_str());
 	fprintf(fp, "    }\n");
     }
-    return(0);
+    return(ferror(fp) ? -1 : 0);
 }
 
 // How a button loads itself from a file

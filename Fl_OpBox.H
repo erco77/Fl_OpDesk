@@ -42,6 +42,7 @@ class Fl_OpDesk;
 ///
 
 class Fl_OpBox : public Fl_Group {
+    friend class Fl_OpDesk;
     int eventxy[2];			// used for dragging: last x/y event
     int dragging;			// used for dragging
     int min_buttw;			// minimum button width

@@ -14,6 +14,11 @@ MyBox::MyBox(const MyBox& o) : Fl_OpBox(o) {
     infodialog = new MyBoxInfoDialog();
 }
 
+MyBox::~MyBox() {
+    // The dialog stores pointers to our buttons and must go first.
+    delete infodialog;
+}
+
 // Handle copying this box's instances of MyButton's
 //
 void MyBox::CopyButtons(const MyBox& o) {
@@ -40,8 +45,11 @@ void MyBox::CopyButtons(const MyBox& o) {
 //
 void MyBox::_ExpandVariable(std::string& src, const std::string varname, const std::string value) {
     // XXX: Apparently STL has no replace_all()..
-    for ( int pos = src.find(varname); pos >= 0; pos = src.find(varname) ) {
-	src.replace(pos, varname.size(), value); 
+    if ( varname.empty() ) return;
+    std::string::size_type pos = 0;
+    while ( (pos = src.find(varname, pos)) != std::string::npos ) {
+	src.replace(pos, varname.size(), value);
+        pos += value.size();
     }
 }
 
@@ -152,7 +160,7 @@ int MyBox::SaveLayout(FILE *fp) {
     }
 
     fprintf(fp, "}\n");
-    return(0);
+    return(ferror(fp) ? -1 : 0);
 }
 
 // LOAD SOURCE CODE ASSCIATED WITH THIS BOX

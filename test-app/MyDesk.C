@@ -7,7 +7,7 @@ void MyDesk::ConnectionError(Fl_OpButton *src, Fl_OpButton *dst, std::string &er
     msg = std::string("    INPUT: ") + src->GetFullName() + std::string("\n") +
 	  std::string(   "OUTPUT: ") + dst->GetFullName() + std::string("\n") +
 	  errmsg;
-    fl_alert(msg.c_str());		// post a dialog
+    fl_alert("%s", msg.c_str());		// post a dialog
 }
 
 // Save the entire desk layout (all boxes/buttons/connections)
@@ -29,7 +29,7 @@ int MyDesk::SaveLayout(FILE *fp) {
 					        src.c_str(),
 					        dst.c_str());
     }
-    return(0);
+    return(ferror(fp) ? -1 : 0);
 }
 
 // Load an entire desk layout (all boxes/buttons/connections)
@@ -53,6 +53,7 @@ int MyDesk::LoadLayout(FILE *fp, int &line, std::string &errmsg) {
 	    begin();
 		MyBox *box = new MyBox(0,0,150,80,arg);
 		if ( box->LoadLayout(fp, line, errmsg) < 0 ) {
+		    end();
 		    return(-1);
 		}
 	    end();
@@ -60,7 +61,7 @@ int MyDesk::LoadLayout(FILE *fp, int &line, std::string &errmsg) {
 	}
 	// Connect?
 	unsigned long lcol;
-	if ( sscanf(ss, "connect 0x%lx %512s %512s", &lcol, from, to) == 3 ) {
+	if ( sscanf(ss, "connect 0x%lx %511s %511s", &lcol, from, to) == 3 ) {
 	    if ( Connect(from, to, errmsg) < 0 ) {
 		errmsg += std::string("\n") + std::string(s);
 		return(-1);
@@ -72,7 +73,7 @@ int MyDesk::LoadLayout(FILE *fp, int &line, std::string &errmsg) {
 	}
 	// linestyle?
 	unsigned int ls;
-	if ( sscanf(ss, "linestyle %d", &ls) == 1 ) {
+	if ( sscanf(ss, "linestyle %u", &ls) == 1 ) {
 	    SetConnectStyle(Fl_OpConnectStyle(ls));
 	    continue;
 	}
@@ -121,7 +122,7 @@ int MyDesk::PasteSelected() {
     //    the connections, we know which to make for which.
     //
     for ( size_t t=0; t<box_clipboard.size(); t++ ) {
-        MyBox *orig = box_clipboard[t];
+        MyBox *orig = (MyBox*)box_clipboard[t];
 	begin();
             MyBox *copy = new MyBox(*orig);     // create new instance of MyBox using copy ctor
             copy->position(copy->x()+100, copy->y()+100);

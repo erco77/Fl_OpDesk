@@ -1,4 +1,21 @@
-x.xx
+0.84  -- 10/29/2026 - erco@seriss.com
+
+    o Fixed pointer lifetime errors during desk, box, and button deletion,
+      including deferred widget deletion and stale demo clipboard entries.
+
+    o Fixed connection copying when the connection vector reallocates.
+
+    o Fixed output button lookup bounds and initialized widget state.
+
+    o Fixed layout parsing buffer limits, dialog ownership, error message
+      formatting, and a nonterminating source variable expansion loop.
+
+    o Added save error handling and corrected the box disconnect count.
+
+    o Added headless regression checks (make check).
+
+    o Added a GitHub README and corrected Doxygen documentation.
+
     o Added Zabrane Mickael's patch for test-app:
     	o Fix fgets() problem
 	o Some casting fixes for c_str()

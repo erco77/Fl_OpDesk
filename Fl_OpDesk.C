@@ -7,7 +7,7 @@
 
 #include "Fl_OpDesk.H"
 
-/// Constructor for Fl_OpDesk
+/// Constructor for Fl_OpDesk.
 ///    Creates an instance of an empty desk with scrollbars.
 ///
 Fl_OpDesk::Fl_OpDesk(int X,int Y,int W,int H,const char* L) : Fl_Scroll(X,Y,W,H,L) {
@@ -30,7 +30,7 @@ Fl_OpDesk::~Fl_OpDesk() {
     DisconnectAll();
 }
 
-/// INTERNAL: Draws a line between two floating point x/y points.
+/// INTERNAL: Draws a line between two points with floating-point x/y coordinates.
 void Fl_OpDesk::DrawLine(float x1, float y1, float x2, float y2) const {
     fl_line((int)(x1+.5), (int)(y1+.5), (int)(x2+.5), (int)(y2+.5));
 }
@@ -61,7 +61,7 @@ void DrawFlatLine(float x1, float y1, float x2, float y2, int thick, int noleft,
     }
 }
 
-/// Draw the connect specified by \p con.
+/// Draw the connection specified by \p con.
 void Fl_OpDesk::DrawConnect(Fl_OpConnect *con) const {
     Fl_OpButton *src = con->GetDstButton();		// in
     Fl_OpButton *dst = con->GetSrcButton();		// out
@@ -440,7 +440,7 @@ void Fl_OpDesk::SetOpConnectColor(Fl_Color val) {
 
 /// Deselect all boxes.
 /// Marks desk for redraw if any changed.
-/// \returns Number of boxes whose selection was actually changed, 
+/// \returns Number of boxes whose selection was actually changed,
 ///          or zero if none.
 ///
 int Fl_OpDesk::DeselectAll() {
@@ -456,8 +456,8 @@ int Fl_OpDesk::DeselectAll() {
     return(changed);
 }
 
-/// Select all boxes
-/// \returns Number of boxes whose selection was actually changed, 
+/// Select all boxes.
+/// \returns Number of boxes whose selection was actually changed,
 ///          or zero if none. Handles redraw if any changes occurred.
 ///
 int Fl_OpDesk::SelectAll() {
@@ -474,13 +474,13 @@ int Fl_OpDesk::SelectAll() {
     return(changed);
 }
 
-/// INTERNAL: Add connect of two buttons \p srcbut and \p dstbut
+/// INTERNAL: Add a connection between buttons \p srcbut and \p dstbut
 ///    to our internal array.
-///    Doesn't recurse to telling other buttons, local only.
+///    Doesn't notify the buttons; this is a local change only.
 ///    FOR INTERNAL USE ONLY.
-///    \returns 0 if OK. 
-///    \returns 1 if already exists.
-///    \returns -1 on error, \p errmsg has reason.
+///    \returns 0 if OK.
+///    \returns 1 if the connection already exists.
+///    \returns -1 on error, with the reason in \p errmsg.
 ///
 int Fl_OpDesk::_ConnectOnly(Fl_OpButton *srcbut, Fl_OpButton *dstbut, std::string &errmsg) {
     // See if we already have the connection listed
@@ -499,12 +499,12 @@ int Fl_OpDesk::_ConnectOnly(Fl_OpButton *srcbut, Fl_OpButton *dstbut, std::strin
     return(0);
 }
 
-/// Connect two buttons: given two button pointers \p srcbut, \p dstbut.
-/// Handles adding the connection to the connects[] array,
+/// Connect two buttons given pointers \p srcbut and \p dstbut.
+/// Handles adding the connection to the connects[] array
 /// and telling the buttons about each other.
 /// \returns 0 if OK.
-/// \returns 1 if connection already exists.
-/// \returns -1 if an error occurred, \p errmsg has reason.
+/// \returns 1 if the connection already exists.
+/// \returns -1 if an error occurred, with the reason in \p errmsg.
 ///
 int Fl_OpDesk::Connect(Fl_OpButton *srcbut, Fl_OpButton *dstbut, std::string &errmsg) {
     if ( srcbut->GetButtonType() == FL_OP_INPUT_BUTTON ) {
@@ -536,10 +536,10 @@ int Fl_OpDesk::Connect(Fl_OpButton *srcbut, Fl_OpButton *dstbut, std::string &er
 
 /// Connect two buttons given box pointers \p srcbox and \p dstbox,
 /// and button label names \p srcbut_lname and \p dstbut_lname.
-/// Handles adding the connection to the connects[] array,
+/// Handles adding the connection to the connects[] array
 /// and telling the buttons about each other.
 /// \returns 0 if OK.
-/// \returns -1 on error, \p errmsg has reason.
+/// \returns -1 on error, with the reason in \p errmsg.
 ///
 int Fl_OpDesk::Connect(Fl_OpBox *srcbox, const std::string& srcbut_lname, 
 		       Fl_OpBox *dstbox, const std::string& dstbut_lname,
@@ -579,10 +579,10 @@ int Fl_OpDesk::Connect(Fl_OpBox *srcbox, const std::string& srcbut_lname,
 }
 
 /// INTERNAL: Disconnect buttons \p a and \p b from our internal list.
-/// Doesn't tell other buttons.
+/// Doesn't notify the buttons.
 /// FOR INTERNAL USE ONLY.
 /// \returns 0 if not found.
-/// \returns >0 which is the number of connections that were removed.
+/// \returns The number of connections removed, if greater than zero.
 ///
 int Fl_OpDesk::_DisconnectOnly(Fl_OpButton *a, Fl_OpButton *b) {
     int count = 0;
@@ -599,7 +599,7 @@ int Fl_OpDesk::_DisconnectOnly(Fl_OpButton *a, Fl_OpButton *b) {
 /// Disconnect two buttons \p a and \p b.
 /// The correct way to cleanly disconnect two buttons.
 /// \returns 0 if not found.
-/// \returns >0 which is the number of connections that were removed.
+/// \returns The number of connections removed, if greater than zero.
 ///
 int Fl_OpDesk::Disconnect(Fl_OpButton *a, Fl_OpButton *b) {
     // Remove connection from our array
@@ -614,7 +614,7 @@ int Fl_OpDesk::Disconnect(Fl_OpButton *a, Fl_OpButton *b) {
 
 /// Disconnect all connections to/from \p box.
 /// \returns 0 if not found.
-/// \returns >0, which is the the number of connections that were removed.
+/// \returns The number of connections removed, if greater than zero.
 ///
 int Fl_OpDesk::Disconnect(Fl_OpBox *box) {
     int count = 0;
@@ -651,7 +651,7 @@ Fl_OpConnect* Fl_OpDesk::GetConnection(int index) {
 }
 
 /// Return the "last" button connection in the connection array.
-///    Returns 0 if empty list.
+///    Returns 0 if the list is empty.
 ///
 Fl_OpConnect* Fl_OpDesk::GetLastOpConnect() {
     if ( connects.size() < 1 ) return(0);
@@ -659,7 +659,7 @@ Fl_OpConnect* Fl_OpDesk::GetLastOpConnect() {
 }
 
 /// Bring the specified box 'to the front', above the other boxes.
-/// This changes the widget order in fltk so that the box is drawn last.
+/// This changes the widget order in FLTK so that the box is drawn last.
 ///
 void Fl_OpDesk::BringToFront(Fl_OpBox *box) {
     Fl_Widget *w = (Fl_Widget*)box;
@@ -669,7 +669,7 @@ void Fl_OpDesk::BringToFront(Fl_OpBox *box) {
 }
 
 /// Delete the \p box from the desk.
-/// Cuts all connections, and FLTK's event loop handles scheduling 
+/// Cuts all connections, and FLTK's event loop handles scheduling
 /// the actual destruction of the widget.
 ///
 void Fl_OpDesk::DeleteBox(Fl_OpBox *box) {
@@ -773,7 +773,7 @@ int Fl_OpDesk::PasteSelected() {
 ///
 ///     Only make copies of connections that are between
 ///     boxes we're copying. (Don't copy connections to
-///     boxes that aren't part of the copy)
+///     boxes that aren't part of the copy.)
 ///
 void Fl_OpDesk::CopyConnections(std::vector<Fl_OpBox*> origboxes, std::vector<Fl_OpBox*> copyboxes) {
     if ( origboxes.size() != copyboxes.size() ) return;
@@ -848,7 +848,7 @@ void Fl_OpDesk::CopyConnections(std::vector<Fl_OpBox*> origboxes, std::vector<Fl
 }
 
 /// INTERNAL: Handles a user interactively dragging out a connection.
-///           Assumes Fl::event_x() and Fl::event_y() have current mouse position.
+///           Assumes Fl::event_x() and Fl::event_y() give the current mouse position.
 ///           If \p b is NULL, stop any existing dragging operations.
 ///
 void Fl_OpDesk::DraggingConnection(Fl_OpButton *srcbut) {
@@ -878,7 +878,7 @@ void Fl_OpDesk::DraggingBoxes(int xdiff, int ydiff) {
     redraw();
 }
 
-/// INTERNAL: Find a button that is under the mouse
+/// INTERNAL: Find a button that is under the mouse.
 Fl_OpButton* Fl_OpDesk::FindButtonUnderMouse() {
     for ( int t=0; t<GetOpBoxTotal(); t++ ) {
 	Fl_OpBox *box = GetOpBox(t);
@@ -903,7 +903,7 @@ void Fl_OpDesk::Clear() {
 
 /// Find a box given its label name, \p lname.
 /// \returns
-///     valid box pointer if found, or NULL if not found (errmsg has reason).
+///     A valid box pointer if found, or NULL with the reason in \p errmsg.
 ///
 Fl_OpBox* Fl_OpDesk::FindBoxByLabel(std::string& lname, std::string& errmsg) {
     for ( int t=0; t<GetOpBoxTotal(); t++ ) {
@@ -917,14 +917,13 @@ Fl_OpBox* Fl_OpDesk::FindBoxByLabel(std::string& lname, std::string& errmsg) {
     return(NULL);
 }
 
-/// Parse separate box and button names from a 'full button name', eg. "boxname(butname)".
+/// Parse separate box and button names from a 'full button name', e.g., "boxname(butname)".
 ///
 /// \b Example:
 /// \code
 ///    IN: fullname = "add(A)"
 ///   OUT: boxname = "add";
 ///        butname = "A";
-///    }
 /// \endcode
 /// \returns 0 if OK, with \p boxname and \p butname set to the parsed names.
 /// \returns -1 if \p fullname could not be parsed.
@@ -947,7 +946,7 @@ int Fl_OpDesk::ParseFullButtonName(const std::string &fullname,
 
 /// Return the box pointer for the given \p fullname.
 /// \returns
-///     valid box pointer if found, or NULL if not found (errmsg has reason).
+///     A valid box pointer if found, or NULL with the reason in \p errmsg.
 ///
 Fl_OpBox* Fl_OpDesk::FindBoxForFullName(const std::string& fullname, std::string& errmsg) {
     std::string boxname, butname;
@@ -957,7 +956,7 @@ Fl_OpBox* Fl_OpDesk::FindBoxForFullName(const std::string& fullname, std::string
 
 /// Return the button pointer for the given \p fullname.
 /// \returns
-///     valid button pointer if found, or NULL if not found (errmsg has reason).
+///     A valid button pointer if found, or NULL with the reason in \p errmsg.
 ///
 Fl_OpButton* Fl_OpDesk::FindButtonForFullName(const std::string& fullname, std::string &errmsg) {
     std::string boxname, butname;
@@ -970,11 +969,11 @@ Fl_OpButton* Fl_OpDesk::FindButtonForFullName(const std::string& fullname, std::
 }
 
 /// Connect two buttons given their full names ("box(butt)") for \p src_name and \p dst_name.
-/// Handles adding the connection to the connects[] array,
+/// Handles adding the connection to the connects[] array
 /// and telling the buttons about each other.
-/// \returns 0 if OK
-/// \returns 1 if connection already exists.
-/// \returns -1 if an error occurred, \p errmsg has reason.
+/// \returns 0 if OK.
+/// \returns 1 if the connection already exists.
+/// \returns -1 if an error occurred, with the reason in \p errmsg.
 ///
 int Fl_OpDesk::Connect(const std::string& src_name, 
                     const std::string& dst_name,
@@ -1034,7 +1033,7 @@ Fl_OpConnectStyle Fl_OpDesk::GetConnectStyle(void) const {
 }
 
 /// Set the current connection line drawing style to \p val.
-///    Handles redraw()ing the desktop.
+///    Calls redraw() to redraw the desk.
 ///
 void Fl_OpDesk::SetConnectStyle(Fl_OpConnectStyle val) {
     opconnect_style = val;

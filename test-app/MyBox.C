@@ -271,23 +271,23 @@ int MyBox::LoadLayout(FILE *fp, int &line, std::string &errmsg) {
     return(0);
 }
 
-/// Set the base name of this box, eg. "add"
-///    Ensures the box's fullname will be 'unique'.
+/// Set the base name of this box, e.g., "add".
+///    Assigns the box a unique full name.
 ///
 void MyBox::SetName(const char *newname) {
     name = newname;
     AssignUniqueFullName();
 }
 
-/// Get the base name of this box. eg. "add"
+/// Get the base name of this box, e.g., "add".
 std::string MyBox::GetName() const {
     return(name);
 }
 
-/// Assign ourselves a unique name.
-///    Uses the box's index number on the desk.
+/// Assign this box a unique name.
+///    Uses the next available box ID from the desk.
 ///    If boxes are created or reordered on the desk, this
-///    should be called to ensure box has a unique name.
+///    should be called to ensure the box has a unique name.
 ///
 void MyBox::AssignUniqueFullName() {
     char nametmp[256];
@@ -300,7 +300,7 @@ void MyBox::AssignUniqueFullName() {
     copy_label(nametmp);
 }
 
-/// FLTK Event handler
+/// FLTK event handler.
 ///     We trap this so we can detect double clicks on the box.
 ///
 int MyBox::handle(int e) {

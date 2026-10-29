@@ -11,28 +11,28 @@
 ///
 /// Fl_OpDesk can be used for just about anything that fits the paradigm
 /// of 'connecting boxes together', such as making electronic circuit
-/// simulators, modular music tools (ie. connecting an 'oscillator' to
+/// simulators, modular music tools (i.e., connecting an 'oscillator' to
 /// an 'amplifier'), industrial control, programmable assembly lines,
 /// etc. The 'boxes' on the 'desk' can represent anything, and what happens
 /// when the user connects them is all up to you.
 ///
 /// In 'widget' terminology, this is a 'node graph' or 'node tree' widget,
-/// where the user can interactive connect 'operation boxes' (Fl_OpBox)
+/// where the user can interactively connect 'operation boxes' (Fl_OpBox)
 /// together to form interconnections (Fl_OpConnect) between 'input'
-/// and 'output' buttons on each box (Fl_OpButton) all of which
-/// is laid out on a 'desk' (Fl_OpDesk).
+/// and 'output' buttons on each box (Fl_OpButton), all of which
+/// are laid out on a 'desk' (Fl_OpDesk).
 ///
 /// The purpose of this widget is to allow users to make modular 'layouts'
-/// that can be visual constructions similar to the real world technique
-/// of connecting black boxes together to form working systems. 
+/// that can be visual constructions similar to the real-world technique
+/// of connecting black boxes together to form working systems.
 ///
 /// <H2>Implementation Synopsis</H2>
 ///
 /// Each box has a row of 'inputs' (on the left) and 'outputs'
 /// (on the right). Each input and output is an instance of an Fl_OpButton.
 /// Multiple boxes can be created inside the 'Fl_OpDesk', which
-/// is an FLTK 'group' widget that manages all the boxs' positions
-/// on the desk, and their interconnections. Scrollbars appear if
+/// is an FLTK 'group' widget that manages the positions of all boxes
+/// on the desk and their interconnections. Scrollbars appear if
 /// the boxes go off the edges of the screen.
 ///
 /// The idea is you derive one or more classes from Fl_OpBox to define
@@ -40,22 +40,21 @@
 /// what each possible 'input' and 'output' button does. Each box makes
 /// instances of these buttons to define the box's inputs and outputs.
 /// You define which buttons can be connected to which other buttons.
-/// You define callbacks that are triggered when the user makes 
+/// You define callbacks that are triggered when the user makes
 /// connections, so you can warn them if they try to do disallowed
 /// things, like connecting outputs to outputs. You can also derive
-/// from Fl_OpDesk to take over control of how the desk works,
-/// and implement functions like 'Load' and 'Save', and what these
-/// do. You can make methods that walk the tree asking each box 
-/// what's in it, and what it's connected to such as generate
-/// code that the connections represent and pass them to a compiler
-/// or script interpreter (the 'test-app' example shows all this),
-/// or have it run a simulation or control hardware.
+/// from Fl_OpDesk to control how the desk works and implement
+/// functions like 'Load' and 'Save'. You can write methods that walk
+/// the tree, asking each box what's in it and what it's connected to.
+/// For example, these methods could generate code from the graph and
+/// pass it to a compiler or script interpreter (as shown in 'test-app'),
+/// run a simulation, or control hardware.
 ///
-/// <H2>Is there a real world analogy?</H2>
+/// <H2>Is there a real-world analogy?</H2>
 ///
-/// A real world analogy would be connecting up a home stereo
-/// system. For instance, and Fl_OpBox might represent the FM Tuner,
-/// Tape Deck, Equalizer, Amplifier, Speakers. Each wire connecting the boxes
+/// A real-world analogy would be connecting up a home stereo
+/// system. For instance, an Fl_OpBox might represent an FM tuner,
+/// tape deck, equalizer, amplifier, or speaker. Each wire connecting the boxes
 /// would be an 'Fl_OpConnect'. The input/output jacks would each be an
 /// instance of an 'Fl_OpButton'. The entire system would be laid out
 /// on a desk, which would be the 'Fl_OpDesk'.
@@ -67,12 +66,12 @@
 /// An example might be a Buchla modular sound system,
 /// which lets one connect modular devices like oscillators, sequencers,
 /// sound effects boxes, mixers, keyboards, ramp generators, amplifiers, etc.
-/// Like the home stereo system above, only more types of black boxes.
+/// This is like the home stereo system above, but with more types of black boxes.
 ///
 /// Another example would be configuring the layout of an
 /// industrial electro-mechanical assembly line's relays/switches/sensors/motors.
-/// Or a residential lighting control / irrigation system. Or a digital
-/// phone switch to manage adding/removing extensions, voice mail features,
+/// Other examples include a residential lighting control or irrigation system,
+/// or a digital phone switch to manage extensions, voicemail features,
 /// paging systems, etc.
 ///
 ///     \image html light-control.png "Lighting control"
@@ -81,35 +80,35 @@
 /// simple programs, where each box represents a function, and the connections
 /// represent variables.
 ///
-/// Another example could be modules for generating simple realtime graphics;
-/// for instance separate 'sine' and 'cosine' generator boxes that feed into
+/// Another example could be modules for generating simple real-time graphics;
+/// for instance, separate 'sine' and 'cosine' generator boxes that feed into
 /// the X/Y inputs of an oscilloscope to draw a circle, or by changing
 /// the input frequencies, a 'spirograph'. Or perhaps a 3-D oscilloscope
-/// so that 3 dimensional patterns can be represented with simple input patterns.
+/// so that three-dimensional patterns can be represented with simple input patterns.
 /// This could be nice for educational purposes to simulate an oscilloscope.
 ///
 ///     \image html oscilloscope.png "Oscilloscope simulator"
 ///
-/// The example program included with this widget shows a full on application
-/// of how to use Fl_OpDesk to generate simple perl scripts. Perhaps other
+/// The example program included with this widget is a complete application
+/// that uses Fl_OpDesk to generate simple Perl scripts. Perhaps other
 /// examples will be included.
 ///
 /// <H2>External Dependencies</H2>
 ///
-/// This widget assumes you have FLTK 1.x and the std C++ library
-/// (eg. std::string, std::vector, etc)
+/// This widget requires FLTK 1.x and the C++ standard library
+/// (e.g., std::string, std::vector, etc.).
 ///
 /// The Fl_OpDesk project was designed so as to either be merged into
-/// the FLTK 1.x library, or to be installed as a subdirectory of your
-/// own project as a separate lib. (The latter is recommended. )
+/// the FLTK 1.x library or to be installed as a subdirectory of your
+/// own project as a separate library. (The latter is recommended.)
 ///
 /// <H2>Where do I start?</H2>
 ///
-/// For examples on how to use the Fl_OpDesk class, see 'test-OpDesk.cxx'
-/// for a simple (but non-practical) use of it. For an actual practical
-/// 'working' application, see the test-app/ directory, which shows a
-/// fully working application that lets users generate Perl scripts
-/// visually, and save + load the OpDesk layouts.
+/// For examples on how to use the Fl_OpDesk class, see 'test-OpDesk.C'
+/// for a basic usage example. For a practical application, see the
+/// test-app/ directory, which shows a fully working application
+/// that lets users generate Perl scripts
+/// visually and save and load the OpDesk layouts.
 ///
 
 /// \file
@@ -127,19 +126,19 @@
 #include "Fl_OpConnect.H"
 
 /// \enum Fl_OpConnectStyle
-/// Style for the connection lines between box buttons
+/// Style for the connection lines between box buttons.
 ///
 enum Fl_OpConnectStyle {
-    FL_OPCONNECT_STYLE_STRAIGHT,	///< -- 'Single' style line connections between buttons
-    FL_OPCONNECT_STYLE_TRACE,		///< -- 'Solder trace' style line connections
-    FL_OPCONNECT_STYLE_CURVE,		///< -- 'Curved' style line connections (bezier)
+    FL_OPCONNECT_STYLE_STRAIGHT,	///< Straight-line connections between buttons.
+    FL_OPCONNECT_STYLE_TRACE,		///< Solder-trace-style connections.
+    FL_OPCONNECT_STYLE_CURVE,		///< Curved connections (Bezier).
 };
 
 /// \class Fl_OpDesk
 ///
-/// \brief The main Fl_OpDesk widget, parent to the following widgets:
-///      Fl_OpBox -- the boxes that can be connected together
-///      Fl_OpButton -- the buttons (input and output) that can be added to an Fl_OpBox
+/// \brief The main workspace widget, which manages boxes and their connections.
+///      Fl_OpBox -- the boxes that can be connected together.
+///      Fl_OpButton -- the input and output buttons added to each Fl_OpBox.
 ///      Fl_OpConnect -- the connections between input/output buttons of different boxes.
 ///
 /// \code
@@ -150,28 +149,27 @@ enum Fl_OpConnectStyle {
 ///
 /// \endcode
 ///
-/// This widget encapsulates the graphics elements of the desk + nodes.
+/// This widget encapsulates the graphical elements of the desk and nodes.
 /// Normally you would derive your own classes from each of the above classes
 /// (Fl_OpDesk, Fl_OpBox, and Fl_OpButton) to implement management of your data.
 ///
-/// It's the goal of this widget to not be tied to any particular data sets;
-/// and only implements the graphic representation of the widget. You 
-/// subclass these widgets to implement your data sets.
+/// This widget is not tied to any particular data set; it implements only
+/// the graphical representation. Subclass these widgets to implement
+/// your own data model.
 ///
 /// For instance, if you want the widget to be a graphic representation
 /// of a program, then you'd add your own code to manage each box's code generation.
 /// (See the 'test-app' example for how to do this, where MyDesk/MyBox/MyButton
-/// are example subclasses showing how to implement the 'perl' programming language)
+/// are example subclasses showing how to generate Perl code).
 ///
 /// Or, if you want the widget to represent a data set, then you'd derive
 /// classes so that each box represents a node in your data set. Examples of
 /// this might be showing any kind of data in a 'tree', such as a file system,
 /// a binary tree, or even hardware representations, such as an irrigation system
-/// with each Fl_OpBox representing valves, flow control meters.
-/// or an electronics component simulator where each box represents 
-/// resistors,diodes,capacitors,relays,lights. Or in a sound application,
-/// where each component represents different effects generators such
-/// as oscillators and tone generators, reverb, echo, equalizers..
+/// with each Fl_OpBox representing a valve or flow meter.
+/// In an electronic circuit simulator, each box could represent a resistor,
+/// diode, capacitor, relay, or light. In a sound application, boxes could
+/// represent oscillators, tone generators, reverb or echo effects, or equalizers.
 ///
 class Fl_OpDesk : public Fl_Scroll {
 
@@ -283,9 +281,9 @@ public:
     // VIRTUALS
 
     /// This virtual method can be defined by the app to define what to do
-    /// when a connection error is detected. Default behavior is to print
-    /// the \p errmsg to stderr, but app may want to post a dialog instead.
-    /// The \p srcbut and \p dstbut are the buttons whose connection attempt had failed.
+    /// when a connection error is detected. The default behavior is to print
+    /// the message in \p errmsg to stderr, but the app may want to display a dialog instead.
+    /// The \p srcbut and \p dstbut are the buttons whose connection attempt failed.
     ///
     /// Example:
     /// \code

@@ -7,8 +7,8 @@
 #include "Fl_OpDesk.H"
 
 /// Constructor for the Fl_OpButton.
-/// Creates a button whose label is \p name , and who's type is \p io.
-/// 'name' can be null, and set later with label() or copy_label().
+/// Creates a button whose label is \p name and whose type is \p io.
+/// The label can be null and set later with label() or copy_label().
 /// Placement of the button is handled entirely by the parent Fl_OpBox.
 ///
 Fl_OpButton::Fl_OpButton(const char *name, Fl_OpButtonType io) : Fl_Button(0,0,1,1,name) {
@@ -66,12 +66,12 @@ Fl_OpButton::Fl_OpButton(const Fl_OpButton &o) : Fl_Button(o.x(),o.y(),o.w(),o.h
     GetOpBox()->_RecalcButtonSizes();
 }
 
-/// Fltk draw() handler.
+/// FLTK draw() handler.
 void Fl_OpButton::draw() {
     Fl_Button::draw();
 }
 
-/// Fltk event handler.
+/// FLTK event handler.
 int Fl_OpButton::handle(int e) {
     // HANDLE DRAGGING OUT NEW CONNECTIONS
     int ret = Fl_Button::handle(e);
@@ -129,7 +129,7 @@ int Fl_OpButton::handle(int e) {
 }
 
 /// PROTECTED: Connect this button only in our internal list.
-/// Doesn't tell other button or the Fl_OpDesk about the connection;
+/// Doesn't tell the other button or the Fl_OpDesk about the connection;
 /// this is a local change only. NOT INTENDED FOR PUBLIC USE.
 ///
 int Fl_OpButton::_ConnectToOnly(Fl_OpButton *but, std::string &errmsg) {
@@ -157,7 +157,7 @@ int Fl_OpButton::_ConnectToOnly(Fl_OpButton *but, std::string &errmsg) {
 }
 
 /// PRIVATE: Remove all connections to \p but from our connected_to[] list.
-/// That's all this does.. no notifications are made to other button;
+/// No notifications are sent to the other button;
 /// that's handled by the public methods.
 ///
 void Fl_OpButton::_RemoveConnect(Fl_OpButton *but) {
@@ -170,7 +170,7 @@ void Fl_OpButton::_RemoveConnect(Fl_OpButton *but) {
 }
 
 /// PROTECTED: Disconnect a button only from our internal list.
-/// Doesn't tell other button or the Fl_OpDesk about the disconnect;
+/// Doesn't tell the other button or the Fl_OpDesk about the disconnect;
 /// this is a local change only. NOT INTENDED FOR PUBLIC USE.
 //
 void Fl_OpButton::_DisconnectOnly(Fl_OpButton *but) {
@@ -182,15 +182,15 @@ void Fl_OpButton::_DisconnectOnly(Fl_OpButton *but) {
 }
 
 /// Connect this button to another one.
-/// Handles a) telling other button about the connection, and
-/// b) avoids illegal "output-to-output" or "input-to-input" connections.
+/// Handles a) telling the other button about the connection and
+/// b) avoiding illegal "output-to-output" or "input-to-input" connections.
 ///
 /// If we're an input button, any previous connection is dropped first.
-/// If we're an output button, drops any existing connections *to dstbut*,
-/// then recreates.
+/// If we're an output button, any existing connection to \p but is dropped
+/// and then recreated.
 ///
 /// \returns
-///    0 if OK. Otherwise, -1 on error, \p errmsg has reason.
+///    0 on success, or -1 on error with the reason in \p errmsg.
 ///
 int Fl_OpButton::ConnectTo(Fl_OpButton *but, std::string &errmsg) {
 
@@ -213,7 +213,7 @@ int Fl_OpButton::ConnectTo(Fl_OpButton *but, std::string &errmsg) {
     return(0);
 }
 
-/// Disconnect a connection to a specified button
+/// Disconnect this button from the specified button.
 ///     The correct way to cleanly disconnect two buttons.
 ///
 void Fl_OpButton::Disconnect(Fl_OpButton *but) {
@@ -244,7 +244,7 @@ int Fl_OpButton::IsConnected() const {
 }
 
 /// See if the specified button \p but is in our connection list.
-/// \returns 1 if button is in connection list
+/// \returns 1 if the button is in the connection list.
 /// \returns 0 if not.
 ///
 int Fl_OpButton::IsConnected(const Fl_OpButton *but) const {
@@ -269,12 +269,12 @@ std::string Fl_OpButton::GetFullName() const {
     return(name);
 }
 
-/// Return the type of button; input or output.
+/// Return the type of button: input or output.
 Fl_OpButtonType Fl_OpButton::GetButtonType() const {
     return(button_type);
 }
 
-/// Get the button's 'minimum height', given its label size, and adjusting for margins.
+/// Get the button's minimum height, accounting for its label size and margins.
 int Fl_OpButton::GetMinimumHeight() const {
     return(labelsize() + 6);
 }
@@ -287,22 +287,22 @@ int Fl_OpButton::GetMinimumWidth() const {
     } else return(6);
 }
 
-/// Return the pointer this button's parent Fl_OpBox.
+/// Return a pointer to this button's parent Fl_OpBox.
 Fl_OpBox *Fl_OpButton::GetOpBox() {
     return((Fl_OpBox*)parent());
 }
 
-/// Return a constant pointer this button's parent Fl_OpBox.
+/// Return a pointer to this button's parent Fl_OpBox as a const object.
 const Fl_OpBox* Fl_OpButton::GetOpBox() const {
     return((const Fl_OpBox*)parent());
 }
 
-/// Return a pointer to the parent OpDesk.
+/// Return a pointer to the parent Fl_OpDesk.
 Fl_OpDesk *Fl_OpButton::GetOpDesk() {
     return(GetOpBox()->GetOpDesk());
 }
 
-/// Return a constnat pointer to the parent OpDesk.
+/// Return a pointer to the parent Fl_OpDesk as a const object.
 const Fl_OpDesk *Fl_OpButton::GetOpDesk() const {
     return(GetOpBox()->GetOpDesk());
 }
@@ -327,8 +327,8 @@ size_t Fl_OpButton::GetTotalConnectedButtons() const {
 ///
 /// \p index is NOT range checked; use either IsConnected()
 /// to see if there's at least one connection, or use
-/// GetTotalConnectedButtons() to determine the max value
-/// for \p index.
+/// GetTotalConnectedButtons() to determine the number of valid indices
+/// (0 through GetTotalConnectedButtons() - 1).
 ///
 /// To loop through all the connected buttons, you can use:
 /// \code
@@ -351,14 +351,14 @@ const Fl_OpButton* Fl_OpButton::GetConnectedButton(size_t index) const {
 ///
 /// \p index is NOT range checked; use either IsConnected()
 /// to see if there's at least one connection, or use
-/// GetTotalConnectedButtons() to determine the max value
-/// for \p index.
+/// GetTotalConnectedButtons() to determine the number of valid indices
+/// (0 through GetTotalConnectedButtons() - 1).
 ///
 Fl_OpConnect* Fl_OpButton::GetConnection(size_t index) {
     return(GetOpDesk()->GetConnection(this, connected_to[index]));
 }
 
-/// Returns array of \p outboxes connected to this button.
+/// Append the boxes connected to this button to \p outboxes.
 void Fl_OpButton::GetOutputBoxes(std::vector<Fl_OpBox*> &outboxes) {
     for ( size_t t=0; t<connected_to.size(); t++ ) {
 	outboxes.push_back(connected_to[t]->GetOpBox());

@@ -5,7 +5,7 @@
 
 ///
 /// \file
-/// \brief This class handles connections between two Fl_OpButton's
+/// \brief This class handles connections between two Fl_OpButton instances.
 ///
 
 #include "Fl_OpButton.H"
@@ -16,15 +16,14 @@ class Fl_OpButton;
 ///
 /// \brief This encapsulates a single connection between two buttons.
 ///
-/// This implements a connection beween one output button
-/// of an opbox, and one input button of another opbox.
+/// This implements a connection between one output button
+/// of one box and one input button of another box.
 /// For connections from one button to many, use multiple
 /// instances of Fl_OpConnect for each separate connection.
 ///
-/// The Fl_OpDesk keeps an array of these, so it can keep track
-/// of all connections for the purposes of drawing, and for
-/// the application to be able to easily loop through for code
-/// generation purposes.
+/// Fl_OpDesk keeps an array of these objects to track all connections
+/// for drawing and to let the application iterate over them for code
+/// generation.
 ///
 class Fl_OpConnect {
     Fl_OpButton *srcbut;		// source button
@@ -73,7 +72,7 @@ public:
         return(srcbut);
     }
 
-    /// Return destination button
+    /// Return the destination button.
     Fl_OpButton *GetDstButton() const {
         return(dstbut);
     }
@@ -98,7 +97,7 @@ public:
         width = val;
     }
 
-    /// Copy the attributes (color, width, etc) from \p old connection to the current.
+    /// Copy the attributes (color, width, etc) from the \p old connection to this one.
     void CopyAttributes(Fl_OpConnect *old) {
         SetColor(old->GetColor());
         SetWidth(old->GetWidth());

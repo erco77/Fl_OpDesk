@@ -68,7 +68,7 @@ public:
     ~Fl_OpBox();
     Fl_OpBox(const Fl_OpBox& o);
 
-    /// Return height of title bar
+    /// Return the height of the title bar.
     int GetTitleHeight() const {
         return(labelsize() + 6);
     }
@@ -99,12 +99,12 @@ public:
         return(min_boxh);
     }
 
-    /// Set minimum connector length
+    /// Set the minimum connector length.
     void SetMinimumConnectLength(int val) {
         min_conlen = val;
     }
 
-    /// Get minimum connector length
+    /// Get the minimum connector length.
     int GetMinimumConnectLength() const {
         return(min_conlen);
     }

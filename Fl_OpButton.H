@@ -22,7 +22,7 @@ class Fl_OpBox;
 class Fl_OpConnect;
 
 /// \enum Fl_OpButtonType
-/// The types of buttons; input or output.
+/// The types of buttons: input or output.
 ///
 enum Fl_OpButtonType {
     FL_OP_INPUT_BUTTON,		///< -- an input button
@@ -52,11 +52,11 @@ enum Fl_OpButtonType {
 /// The connection callback type.
 ///
 ///    The connection callback will be invoked whenever a connection between two
-///    buttons is made or removed. 
+///    buttons is made or removed.
 ///
 ///    The callback is invoked at both ends of the connection (for both buttons).
-///    On input the opposing button is passed in, and the callback should determine
-///    if the buttons can be connected or not, based on its return value:
+///    On input, the opposing button is passed in, and the callback should determine
+///    whether the buttons can be connected, indicating this with its return value:
 ///    the callback returns 0 to allow the connection, -1 to disallow.
 ///
 ///    WHEN A CONNECTION IS BEING MADE
@@ -66,7 +66,7 @@ enum Fl_OpButtonType {
 ///       button   -- the opposing button
 ///       userdata -- the optional userdata
 ///       type     -- will be Fl_OpButton::MAKE_CONNECT
-///       errmsg   -- to be filled out if connection should not be allowed
+///       errmsg   -- to be filled out if the connection should not be allowed
 ///
 ///    On return:
 ///
@@ -140,8 +140,8 @@ public:
 
     /// This virtual method can be defined by the app to detect when a connection to \p button is being made.
     ///
-    /// The app can 'OK' the connection by returning 0, 
-    /// or 'FAIL' the connection by returning -1, and setting \p errmsg to the reason why.
+    /// The app can 'OK' the connection by returning 0,
+    /// or 'FAIL' the connection by returning -1 and setting \p errmsg to the reason why.
     ///
     /// Example:
     /// \code
@@ -158,7 +158,7 @@ public:
     /// [..]
     /// \endcode
     ///
-    ///    
+    ///
     virtual int Connecting(Fl_OpButton*, std::string& errmsg) {
         return(0);
     }

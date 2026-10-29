@@ -65,7 +65,7 @@ Fl_OpBox::Fl_OpBox(const Fl_OpBox &o) : Fl_Group(o.x(),o.y(),o.w(),o.h()) {
 }
 
 /// Virtual method to handle copying buttons from one box to another.
-/// Derived classes can override this to handle copying higher level
+/// Derived classes can override this to handle copying higher-level
 /// buttons from one box to another.
 ///
 void Fl_OpBox::CopyButtons(const Fl_OpBox& o) {
@@ -200,7 +200,7 @@ void Fl_OpBox::draw() {
 			     color());
 }
 
-/// INTERNAL: Recalculates button sizes, eg. when a new button is added.
+/// INTERNAL: Recalculates button sizes, e.g., when a new button is added.
 ///     NOT INTENDED FOR PUBLIC USE.
 ///
 void Fl_OpBox::_RecalcButtonSizes() {
@@ -287,9 +287,9 @@ void Fl_OpBox::_RecalcButtonSizes() {
     init_sizes();
 }
 
-/// Return Fl_OpButton given a button's label.
-/// eg. "A1", as opposed to using its 'full name', "add_123_A1"
-/// \returns The button specified, or 0 if an occurred, \p errmsg has reason.
+/// Find an Fl_OpButton by its label, e.g., "A1", rather than its
+/// full name, e.g., "add_123(A1)".
+/// \returns The specified button, or 0 if not found, with the reason in \p errmsg.
 ///
 Fl_OpButton* Fl_OpBox::FindButtonByLabel(const std::string& lname, std::string& errmsg) {
     for ( int t=0; t<children(); t++ ) {
@@ -308,8 +308,8 @@ Fl_OpButton* Fl_OpBox::FindButtonByLabel(const std::string& lname, std::string& 
 }
 
 /// Bring this box above all the others.
-/// Selecting a box should do this, so that when the box(s)
-/// are moved, they don't move behind other boxes.
+/// Selecting a box should do this so that it stays in front of other
+/// boxes when moved.
 ///
 void Fl_OpBox::BringToFront() {
     GetOpDesk()->BringToFront(this);
@@ -401,7 +401,7 @@ int Fl_OpBox::GetTotalButtons() const {
     return(inputs.size() + outputs.size());
 }
 
-/// Return input button for \p index.
+/// Return the input or output button at \p index.
 Fl_OpButton* Fl_OpBox::GetButton(int index) const {
     if ( index < (int)inputs.size() ) {
         return(inputs[index]);
@@ -410,7 +410,7 @@ Fl_OpButton* Fl_OpBox::GetButton(int index) const {
     }
 }
 
-/// Return index for an input button, or -1 if not found.
+/// Return the index of an input or output button, or -1 if not found.
 int Fl_OpBox::GetIndexForButton(Fl_OpButton *but) const {
     for ( size_t t=0; t<inputs.size(); t++ ) {
         if ( but == inputs[t] ) return(t);

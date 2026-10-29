@@ -43,7 +43,9 @@ Fl_OpButton::~Fl_OpButton() {
     }
 }
 
-/// Fl_OpButton copy constructor. Makes a "copy" of Fl_OpButton \p o.
+/// Copy the label, selected appearance attributes, and button type from \p o.
+/// The new button is added to the current Fl_OpBox with no connections.
+/// FLTK callbacks, user data, and shortcuts are not copied.
 Fl_OpButton::Fl_OpButton(const Fl_OpButton &o) : Fl_Button(o.x(),o.y(),o.w(),o.h()) {
 
     // FLTK COPY STUFF
@@ -111,9 +113,7 @@ int Fl_OpButton::handle(int e) {
 		    //
 		    std::string errmsg;
 		    switch ( GetOpDesk()->Connect(this, but, errmsg) ) {
-		        // TODO: WE NEED A WAY TO ADVERTISE ERRORS BACK TO THE MAIN APP.
-			//       PROBABLY AN ERROR CALLBACK IS NEEDED.
-			//
+                        // Connect() reports validation failures through ConnectionError().
 		        case 0:		// OK
 			    // printf("CONNECTED OK\n");	// DEBUGGING
 			    break;
@@ -132,9 +132,10 @@ int Fl_OpButton::handle(int e) {
     return(ret);
 }
 
-/// PROTECTED: Connect this button only in our internal list.
-/// Doesn't tell the other button or the Fl_OpDesk about the connection;
-/// this is a local change only. NOT INTENDED FOR PUBLIC USE.
+/// PRIVATE: Validate the connection and add the opposing button to our list.
+/// Does not add the new connection to the opposing button or the desk.
+/// For an input, DisconnectAll() removes any previous connection from both
+/// endpoints and the desk. NOT INTENDED FOR PUBLIC USE.
 ///
 int Fl_OpButton::_ConnectToOnly(Fl_OpButton *but, std::string &errmsg) {
     // Other button same type as ours? (input<->input or output<->output)
@@ -173,9 +174,9 @@ void Fl_OpButton::_RemoveConnect(Fl_OpButton *but) {
     }
 }
 
-/// PROTECTED: Disconnect a button only from our internal list.
-/// Doesn't tell the other button or the Fl_OpDesk about the disconnect;
-/// this is a local change only. NOT INTENDED FOR PUBLIC USE.
+/// PRIVATE: Call our Disconnecting() hook and remove the opposing button
+/// from our list. Does not update the other button or the desk.
+/// NOT INTENDED FOR PUBLIC USE.
 //
 void Fl_OpButton::_DisconnectOnly(Fl_OpButton *but) {
     // Let app know we're disconnecting
@@ -189,9 +190,10 @@ void Fl_OpButton::_DisconnectOnly(Fl_OpButton *but) {
 /// Handles a) telling the other button about the connection and
 /// b) avoiding illegal "output-to-output" or "input-to-input" connections.
 ///
-/// If we're an input button, any previous connection is dropped first.
-/// If we're an output button, any existing connection to \p but is dropped
-/// and then recreated.
+/// Once the input endpoint accepts validation, it drops its previous connection.
+/// Other connections on the output endpoint are retained.
+/// Prefer Fl_OpDesk::Connect(), which checks for an existing connection and
+/// normalizes the order of input and output endpoints.
 ///
 /// \returns
 ///    0 on success, or -1 on error with the reason in \p errmsg.
@@ -261,9 +263,10 @@ int Fl_OpButton::IsConnected(const Fl_OpButton *but) const {
 }
 
 /// Return the 'full instance name' for this button.
-///    This name uniquely identifies this button from all the other
-///    buttons on the Fl_OpDesk, the form being "BOX(BUT)", where "BOX" is
-///    the parent Fl_OpBox's unique name, and "BUT" is this button's unique label.
+///    The form is "BOX(BUT)", where "BOX" is the parent box's label and
+///    "BUT" is this button's label. Both labels must be non-null.
+///    The application must assign unique box labels and unique button labels
+///    within each box for the resulting full names to be unique.
 ///
 std::string Fl_OpButton::GetFullName() const {
     std::string name = std::string(GetOpBox()->label()) +
@@ -287,7 +290,7 @@ int Fl_OpButton::GetMinimumHeight() const {
 int Fl_OpButton::GetMinimumWidth() const {
     if ( label() ) {
 	fl_font(labelfont(), labelsize());	// fl_width() needs to know font
-	return((int)fl_width(label()) + 6);	// 6 pixel margin on either side
+	return((int)fl_width(label()) + 6);	// 6 pixels of total horizontal padding
     } else return(6);
 }
 
@@ -352,6 +355,8 @@ const Fl_OpButton* Fl_OpButton::GetConnectedButton(size_t index) const {
 }
 
 /// Return the Fl_OpConnect connection for the given connected button \p index.
+/// The returned pointer may be invalidated when desk connections are added
+/// or removed; do not retain it across such operations.
 ///
 /// \p index is NOT range checked; use either IsConnected()
 /// to see if there's at least one connection, or use
@@ -363,6 +368,9 @@ Fl_OpConnect* Fl_OpButton::GetConnection(size_t index) {
 }
 
 /// Append the boxes connected to this button to \p outboxes.
+/// For an input button, these are the boxes supplying its value; for an
+/// output button, these are the destination boxes. The vector is not cleared,
+/// and multiple connections to one box produce duplicate entries.
 void Fl_OpButton::GetOutputBoxes(std::vector<Fl_OpBox*> &outboxes) {
     for ( size_t t=0; t<connected_to.size(); t++ ) {
 	outboxes.push_back(connected_to[t]->GetOpBox());

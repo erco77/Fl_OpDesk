@@ -11,7 +11,7 @@ class MyButton;				// forward declare MyButton
 // MyConstantDialog -- a popup dialog for prompting the user for a constant value
 //
 class MyConstantDialog : public Fl_Double_Window {
-    MyButton *butt;			// parent button
+    MyButton *butt;			// owning button (not the FLTK parent)
     Fl_Input *input;			// input widget
 
     // Callback to handle user input

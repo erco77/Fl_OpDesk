@@ -40,7 +40,7 @@
 /// what each possible 'input' and 'output' button does. Each box makes
 /// instances of these buttons to define the box's inputs and outputs.
 /// You define which buttons can be connected to which other buttons.
-/// You define callbacks that are triggered when the user makes
+/// You override connection hooks that are triggered when the user makes
 /// connections, so you can warn them if they try to do disallowed
 /// things, like connecting outputs to outputs. You can also derive
 /// from Fl_OpDesk to control how the desk works and implement
@@ -291,10 +291,10 @@ public:
     ///     // Handle displaying connection errors
     ///     void ConnectionError(Fl_OpButton *src, Fl_OpButton *dst, std::string &errmsg) {
     ///         std::string msg;
-    ///         msg = std::string("    INPUT: ") + src->GetFullName() + std::string("\n") +
-    ///               std::string(   "OUTPUT: ") + dst->GetFullName() + std::string("\n") +
+    ///         msg = std::string("OUTPUT: ") + src->GetFullName() + std::string("\n") +
+    ///               std::string(" INPUT: ") + dst->GetFullName() + std::string("\n") +
     ///               errmsg;
-    ///         fl_alert(msg.c_str());		// post a dialog
+    ///         fl_alert("%s", msg.c_str());		// post a dialog
     ///     }
     /// [..]
     /// \endcode

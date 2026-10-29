@@ -483,7 +483,7 @@ int Fl_OpDesk::SelectAll() {
 ///    FOR INTERNAL USE ONLY.
 ///    \returns 0 if OK.
 ///    \returns 1 if the connection already exists.
-///    \returns -1 on error, with the reason in \p errmsg.
+///    This helper does not validate the endpoints or call connection hooks.
 ///
 int Fl_OpDesk::_ConnectOnly(Fl_OpButton *srcbut, Fl_OpButton *dstbut, std::string &errmsg) {
     // See if we already have the connection listed
@@ -541,7 +541,7 @@ int Fl_OpDesk::Connect(Fl_OpButton *srcbut, Fl_OpButton *dstbut, std::string &er
 /// and button label names \p srcbut_lname and \p dstbut_lname.
 /// Handles adding the connection to the connects[] array
 /// and telling the buttons about each other.
-/// \returns 0 if OK.
+/// \returns 0 for a new or already-existing connection.
 /// \returns -1 on error, with the reason in \p errmsg.
 ///
 int Fl_OpDesk::Connect(Fl_OpBox *srcbox, const std::string& srcbut_lname, 
@@ -649,11 +649,13 @@ int Fl_OpDesk::GetConnectionsTotal() const {
 }
 
 /// Return a particular button connection specified by \p index.
+/// The pointer may be invalidated when connections are added or removed.
 Fl_OpConnect* Fl_OpDesk::GetConnection(int index) {
     return(&(connects[index]));
 }
 
 /// Return the "last" button connection in the connection array.
+/// The pointer may be invalidated when connections are added or removed.
 ///    Returns 0 if the list is empty.
 ///
 Fl_OpConnect* Fl_OpDesk::GetLastOpConnect() {
@@ -672,8 +674,9 @@ void Fl_OpDesk::BringToFront(Fl_OpBox *box) {
 }
 
 /// Delete the \p box from the desk.
-/// Cuts all connections, and FLTK's event loop handles scheduling
-/// the actual destruction of the widget.
+/// Immediately disconnects the box, removes it from the desk and clipboard,
+/// and clears its desk pointer. Fl::delete_widget() schedules the actual
+/// destruction for a later event-loop iteration.
 ///
 void Fl_OpDesk::DeleteBox(Fl_OpBox *box) {
     Disconnect(box);		// disconnect all connections
@@ -701,10 +704,10 @@ int Fl_OpDesk::DeleteSelected() {
     return(count);
 }
 
-/// Cut the selected boxes to the paste buffer.
-/// Returns how many boxes were cut.
-///
-/// TBD: Paste buffer not yet implemented.
+/// Placeholder for cutting selected boxes to the clipboard.
+/// Currently clears the clipboard, displays an alert, and deletes the
+/// selected boxes without making them available for paste.
+/// \returns The number of boxes deleted.
 ///
 int Fl_OpDesk::CutSelected() {
     box_clipboard.clear();
@@ -712,8 +715,11 @@ int Fl_OpDesk::CutSelected() {
     return(DeleteSelected());			// TBD: for now, use delete
 }
 
-/// Copy the selected boxes to the paste buffer.
-/// Returns how many boxes were copied.
+/// Store pointers to the selected boxes in the desk's internal clipboard.
+/// The boxes and their current connections are copied only when pasted;
+/// edits to the originals before paste affect the copies. Deleting an original
+/// removes it from the clipboard. This is not the operating system clipboard.
+/// \returns The number of boxes placed in the clipboard.
 ///
 int Fl_OpDesk::CopySelected() {
     box_clipboard.clear();
@@ -857,7 +863,7 @@ void Fl_OpDesk::CopyConnections(std::vector<Fl_OpBox*> origboxes, std::vector<Fl
 
 /// INTERNAL: Handles a user interactively dragging out a connection.
 ///           Assumes Fl::event_x() and Fl::event_y() give the current mouse position.
-///           If \p b is NULL, stop any existing dragging operations.
+///           If \p srcbut is NULL, stop any existing dragging operations.
 ///
 void Fl_OpDesk::DraggingConnection(Fl_OpButton *srcbut) {
     if ( srcbut ) {
@@ -896,7 +902,8 @@ Fl_OpButton* Fl_OpDesk::FindButtonUnderMouse() {
     return(0);
 }
 
-/// Clear the entire desk; delete all boxes/connections.
+/// Disconnect and remove every box immediately, clearing the clipboard.
+/// Actual widget destruction is deferred through DeleteBox().
 void Fl_OpDesk::Clear() {
     while ( GetOpBoxTotal() > 0 ) {
         Fl_OpBox *box = GetOpBox(0);
@@ -1020,6 +1027,7 @@ void Fl_OpDesk::_RemoveBox(Fl_OpBox *b) {
 }
 
 /// Return the Fl_OpConnect* connection between \p srcbut and \p dstbut.
+/// The pointer may be invalidated when connections are added or removed.
 ///
 /// \returns
 ///    Valid Fl_OpConnect* on success,

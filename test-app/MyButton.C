@@ -5,8 +5,8 @@
 
 // CTOR
 MyButton::MyButton(const char *buttname, Fl_OpButtonType io, DataType dt) : Fl_OpButton(buttname, io) {
-    // OPTIONAL: This sets a callback that is invoked whenever
-    //           the button is pushed.
+    // OPTIONAL: Set the standard FLTK click callback, normally invoked on
+    //           release, separately from the connection-validation hooks.
     //
     const_val    = "";
     dtype        = dt;
@@ -42,7 +42,8 @@ int MyButton::Connecting(Fl_OpButton *opbut, std::string &errmsg) {
 }
 
 // SET BUTTON TO A CONSTANT VALUE
-//    When this is set, GetVarValue() will return this.
+//    GetVarValue() uses a nonempty constant only for an unconnected input.
+//    Connected inputs use the source variable; outputs use their own variable.
 //    Handles redraw.
 //
 void MyButton::SetConstantValue(const char *val) {
@@ -76,8 +77,9 @@ std::string MyButton::GetDataTypeStr() const {
     return(val);
 }
 
-// SET DATA TYPE FOR THIS BUTTON GIVEN A "STRING"
-//     Returns 0 if OK, -1 if unknown data type.
+// SET DATA TYPE FLAGS FROM SUBSTRINGS "int", "float", AND "string".
+//     Returns 0 if at least one is found, -1 otherwise. This is not a strict
+//     parser: unrecognized text alongside a recognized substring is ignored.
 //
 int MyButton::SetDataTypeStr(const char *s) {
     dtype = DataType(0);
@@ -94,8 +96,8 @@ int MyButton::IsDataType(DataType val) const {
     return( ((int)dtype & (int)val ) ? 1 : 0);
 }
 
-// Return variable name for this button
-//    Box's name is included for context.
+// Return an output variable name, connected input variable, or input constant.
+//    An unconnected input with no constant returns "NO_VALUE".
 //
 std::string MyButton::GetVarValue() const {
     switch ( GetButtonType() ) {

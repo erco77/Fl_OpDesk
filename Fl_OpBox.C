@@ -10,7 +10,8 @@
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
 /// FLTK-style constructor for an Fl_OpBox.
-///    Creates an instance of an Fl_OpBox on the desk.
+///    Creates an instance of an Fl_OpBox on the current Fl_OpDesk.
+///    The current FLTK group must be the desk when this constructor is called.
 ///    Box will have no buttons, and will use the FLTK defaults
 ///    for color(), labelfont(), labelsize(), etc.
 ///
@@ -42,7 +43,10 @@ Fl_OpBox::~Fl_OpBox() {
     Fl_Group::clear();
 }
 
-/// Fl_OpBox copy constructor. Makes a "copy" of Fl_OpBox \p o.
+/// Copy the box geometry, selected appearance attributes, and layout settings
+/// from \p o. Construct the copy with the original desk as the current group.
+/// Buttons and connections are not copied; call CopyButtons() and let the
+/// desk copy the connections separately. FLTK callbacks are not copied.
 Fl_OpBox::Fl_OpBox(const Fl_OpBox &o) : Fl_Group(o.x(),o.y(),o.w(),o.h()) {
     opdesk = o.opdesk;
     opdesk->_AddBox(this);		// register new box with the desk
@@ -69,9 +73,10 @@ Fl_OpBox::Fl_OpBox(const Fl_OpBox &o) : Fl_Group(o.x(),o.y(),o.w(),o.h()) {
     opdesk     = o.opdesk;
 }
 
-/// Virtual method to handle copying buttons from one box to another.
-/// Derived classes can override this to handle copying higher-level
-/// buttons from one box to another.
+/// Append copies of the input and output buttons from \p o to this box.
+/// This method is not virtual and creates base Fl_OpButton instances.
+/// Applications using derived button classes must provide and explicitly
+/// call their own copying method, as demonstrated by MyBox and MyDesk.
 ///
 void Fl_OpBox::CopyButtons(const Fl_OpBox& o) {
     // MAKE COPIES OF INPUT BUTTONS
@@ -320,7 +325,7 @@ void Fl_OpBox::BringToFront() {
     GetOpDesk()->BringToFront(this);
 }
 
-/// Returns the parent Fl_OpDesk for this Fl_OpBox.
+/// Return the owning Fl_OpDesk, or NULL after DeleteBox() detaches the box.
 Fl_OpDesk *Fl_OpBox::GetOpDesk() {
     return(opdesk);
 }

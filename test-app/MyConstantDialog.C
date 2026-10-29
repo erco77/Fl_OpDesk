@@ -14,7 +14,7 @@ void MyConstantDialog::InputCallback2() {
 
 // CONSTRUCTOR
 MyConstantDialog::MyConstantDialog(MyButton *butt) : Fl_Double_Window(250,50) {
-    // Save parent button for later use
+    // Save the owning button for later use (it is not our FLTK parent).
     this->butt = butt;
 
     // Set title of window based on button's full name

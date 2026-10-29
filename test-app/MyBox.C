@@ -41,7 +41,7 @@ void MyBox::CopyButtons(const MyBox& o) {
 // STATIC/PRIVATE: EXPAND VARIABLES -- REPLACE ALL OCCURENCES OF 'varname' WITH 'value' IN 'src'
 //    IN: src = "${A} = ${B} + ${C}", varname="${B}", value="1234";
 //   OUT: src = "${A} = 1234 + ${C}"
-//    'src' returns with all instances of 'varname' changed to 'value'
+//    Replace each occurrence once; do not rescan text inserted from 'value'.
 //
 void MyBox::_ExpandVariable(std::string& src, const std::string varname, const std::string value) {
     // XXX: Apparently STL has no replace_all()..
@@ -100,8 +100,9 @@ void MyBox::SetTraversed(int val) {
     traversed = val;
 }
 
-// Returns a copy of the configured source code with all variables expanded
-//    Walks the tree backwards to resolve inputs.
+// Expand box-title and button placeholders in a copy of this box's source.
+//    Connected inputs use the directly connected output's variable name;
+//    graph traversal and code ordering are handled by App::GetBoxesSorted().
 //
 std::string MyBox::GetExpandedSourceCode() {
     std::string out = srccode;
@@ -117,7 +118,7 @@ std::string MyBox::GetExpandedSourceCode() {
 	varname = std::string("${") +			// eg. "${A}"
 	          std::string(b->label()) +
 		  std::string("}");
-	value = b->GetVarValue();			// walks tree backwards to derive value
+	value = b->GetVarValue();			// get a connected variable name or local constant
 	_ExpandVariable(out, varname, value);
     }
     return(out);
@@ -294,8 +295,8 @@ std::string MyBox::GetName() const {
 
 /// Assign this box a unique name.
 ///    Uses the next available box ID from the desk.
-///    If boxes are created or reordered on the desk, this
-///    should be called to ensure the box has a unique name.
+///    Called during construction and renaming. Each call consumes a new ID;
+///    reordering boxes does not require renaming them.
 ///
 void MyBox::AssignUniqueFullName() {
     char nametmp[256];
@@ -327,7 +328,7 @@ int MyBox::handle(int e) {
 }
 
 // SHOW THE INFO DIALOG FOR THIS BOX
-//    Pop open a dialog showing all the input button static values
+//    Show all input and output ports; input constants can be edited.
 //
 void MyBox::ShowInfoDialog() {
     // Update the info dialog with all our buttons

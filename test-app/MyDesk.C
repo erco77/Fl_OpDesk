@@ -10,7 +10,8 @@ void MyDesk::ConnectionError(Fl_OpButton *src, Fl_OpButton *dst, std::string &er
     fl_alert("%s", msg.c_str());		// post a dialog
 }
 
-// Save the entire desk layout (all boxes/buttons/connections)
+// Save boxes, ports, constants, source, positions, selection, colors, and line style.
+// Connection colors are saved; individual connection widths are not saved.
 int MyDesk::SaveLayout(FILE *fp) {
     fprintf(fp, "next_boxid %d\n", next_boxid);
     // Save connection linestyle
@@ -86,8 +87,9 @@ int MyDesk::LoadLayout(FILE *fp, int &line, std::string &errmsg) {
     return(0);
 }
 
-/// Copy the selected boxes to the paste buffer.
-/// Returns how many boxes were copied.
+/// Store selected-box pointers in the shared internal clipboard.
+/// Paste copies their current contents; deletion removes their entries.
+/// Returns the number of boxes placed in the clipboard.
 ///
 int MyDesk::CopySelected() {
     box_clipboard.clear();

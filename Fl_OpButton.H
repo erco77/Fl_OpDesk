@@ -32,13 +32,13 @@ enum Fl_OpButtonType {
 /// \class Fl_OpButton
 ///
 /// \brief The Fl_OpButton widget, an FLTK widget derived from Fl_Button
-///        that manages just the buttons of an Fl_OpBox. These become
+///        that represents an input or output port of an Fl_OpBox. Ports become
 ///        children of the Fl_OpBox in the usual FLTK fashion, where
 ///        opbox->begin() and opbox->end() are used to bracket the
 ///        creation of buttons, a simple example being:
 /// \code
 ///         // Create box
-///         Fl_OpBox *box = new Fl_OpBox(X,Y,150,80);
+///         Fl_OpBox *box = new Fl_OpBox(X,Y,150,80,"add");
 ///         box->copy_label("add");
 ///         box->begin();
 ///             // Create two input buttons ("A", "B") and one output button ("OUT")
@@ -48,47 +48,47 @@ enum Fl_OpButtonType {
 ///         box->end();
 /// \endcode
 ///
-
-/// The connection callback type.
+/// Connection validation and notification methods.
 ///
-///    The connection callback will be invoked whenever a connection between two
-///    buttons is made or removed.
-///
-///    The callback is invoked at both ends of the connection (for both buttons).
-///    On input, the opposing button is passed in, and the callback should determine
-///    whether the buttons can be connected, indicating this with its return value:
-///    the callback returns 0 to allow the connection, -1 to disallow.
+///    The virtual Connecting() and Disconnecting() methods handle connection
+///    validation and notification. These are separate from Fl_Button's click
+///    callback; they do not take userdata or a connection-type argument.
 ///
 ///    WHEN A CONNECTION IS BEING MADE
+///
+///    Connecting() is called on each endpoint in turn. The second endpoint
+///    is checked only if the first endpoint accepts the connection.
 ///
 ///    On input:
 ///
 ///       button   -- the opposing button
-///       userdata -- the optional userdata
-///       type     -- will be Fl_OpButton::MAKE_CONNECT
-///       errmsg   -- to be filled out if the connection should not be allowed
+///       errmsg   -- a reference to an error message; set this if rejecting
+///                   the connection
 ///
 ///    On return:
 ///
-///       Return value should be 0 if OK to connect, -1 on error with errmsg set to the reason.
+///       Return 0 to allow the connection, or -1 to reject it with errmsg
+///       set to the reason. The implementation treats any negative return
+///       value as rejection.
 ///
-///    WHEN A DISCONNECT IS BEING MADE
+///    WHEN A CONNECTION IS BEING REMOVED
+///
+///    Disconnecting() is called on the endpoints when they are disconnected.
+///    It can also be called when a partially established connection is
+///    rolled back after validation fails.
 ///
 ///    On input:
 ///
 ///       button   -- the opposing button being disconnected
-///       userdata -- the optional userdata
-///       type     -- will be Fl_OpButton::DISCONNECT
-///       errmsg   -- not used
 ///
 ///    On return:
 ///
-///       Return value should always be zero.
+///       No return value; Disconnecting() returns void.
 ///
 class Fl_OpButton;
 
 // Operation Buttons
-//    Manages all the input buttons for Fl_OpBoxes
+//    Represents an input or output button belonging to an Fl_OpBox.
 //
 class Fl_OpButton : public Fl_Button {
     Fl_OpButtonType           button_type;	// type of this button (input|output)
@@ -138,7 +138,7 @@ public:
 
     // VIRTUALS
 
-    /// This virtual method can be defined by the app to detect when a connection to \p button is being made.
+    /// Override this method to validate a connection to the opposing button.
     ///
     /// The app can 'OK' the connection by returning 0,
     /// or 'FAIL' the connection by returning -1 and setting \p errmsg to the reason why.
@@ -148,7 +148,7 @@ public:
     /// class MyButton : public Fl_OpButton {
     ///     // Handle checking connections
     ///     int Connecting(Fl_OpButton *to, std::string &errmsg) {
-    ///         if ( to->OKToConnect(this) ) {
+    ///         if ( to->GetButtonType() != GetButtonType() ) {
     ///             return(0);      // OK
     ///         } else {
     ///             errmsg = "It's not OK to connect";

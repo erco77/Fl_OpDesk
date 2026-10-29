@@ -32,7 +32,9 @@ class Fl_OpConnect {
     int       width;		// connection width
 
 public:
-    /// Fl_OpConnect constructor. Establishes a connection between buttons \p a and \p b.
+    /// Record pointers to buttons \p a and \p b with default drawing attributes.
+    /// This does not update the buttons or the desk and does not own the buttons.
+    /// Use Fl_OpDesk::Connect() to establish a graph connection.
     Fl_OpConnect(Fl_OpButton *a, Fl_OpButton *b) {
 	srcbut = a;
 	dstbut = b;

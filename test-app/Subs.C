@@ -3,7 +3,7 @@
 
 //INSERT-LGPL-HEADER-HERE//
 
-// Skip over leading white space; return pointer to first non-white char
+// Skip leading spaces and tabs; return the first other character (or terminator).
 char *skipwhite(char *s) {
     while ( *s == ' ' || *s == 9 ) { ++s; }
     return(s);

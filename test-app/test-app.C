@@ -430,7 +430,7 @@ public:
 	// Open file for writing, save
 	FILE *fp = fopen(filename.c_str(), "w");
 	if ( fp == NULL ) {
-	    // Error? Post dialog
+	    // Return an error message to the caller.
 	    errmsg = std::string("Cannot open '") +
 		     std::string(filename) +
 		     std::string("' for writing: ") +
@@ -505,7 +505,7 @@ public:
 	// Open file for reading, load
 	FILE *fp = fopen(filename, "r");
 	if ( fp == NULL ) {
-	    // Error? Post dialog
+	    // Return an error message to the caller.
 	    errmsg = std::string("Cannot open '") +
 		     std::string(filename) +
 		     std::string("' for reading: ") +
@@ -541,7 +541,7 @@ public:
         while (layout_fc->visible()) {
 	    Fl::wait();
         }
-	// User didn't hit 'cancel'? Keep the filename they specified, save file
+	// User didn't hit 'cancel'? Keep the filename they specified and load it.
 	if ( layout_fc->count() > 0 && layout_fc->value() ) {
 	    // Get filename user supplied
 	    layout_filename = layout_fc->value();
@@ -592,15 +592,16 @@ public:
 	boxes.push_back(box);		// do this last, so trunks of tree at end of list
     }
 
-    // Return an array of boxes sorted 'appropriately' for code generation
+    // Append dependency-ordered boxes reachable upstream from terminal boxes.
+    // Components with no such terminal box (e.g., isolated cycles) are omitted.
     void GetBoxesSortedLeftToRight(std::vector<MyBox*> &boxes) {
 	int i;
-        // Mark all boxes 'traversed'
+        // Clear the traversal flags before collecting dependencies.
 	for ( i=0; i<mydesk->GetOpBoxTotal(); i++ ) {
 	    MyBox *box = (MyBox*)mydesk->GetOpBox(i);
 	    box->SetTraversed(0);
 	}
-        // Find all boxes that have no outputs
+        // Find boxes with no outgoing connections (including boxes with no output ports).
 	for ( i=0; i<mydesk->GetOpBoxTotal(); i++ ) {
 	    MyBox *box = (MyBox*)mydesk->GetOpBox(i);
 	    int tconnects = 0;
@@ -637,9 +638,9 @@ public:
 	win->show();
     }
 
-    // Generate code into string
+    // Append generated Perl code to the supplied string.
     void GenerateCode(std::string &code) {
-	// C STYLE HEADER
+	// PERL SCRIPT HEADER
 	code += "#!/usr/bin/perl\n"
 	        "### START\n\n";
 	// Get a list of the boxes sorted in left-to-right order
@@ -650,12 +651,12 @@ public:
 	    MyBox *box = boxes[t];
 	    code += box->GetExpandedSourceCode();
 	}
-	// C STYLE FOOTER
+	// PERL SCRIPT FOOTER
 	code += "### END\n"
 	        "exit(0);\n";
     }
 
-    // Save all box's source code
+    // Generate source code and display it (or print it with PRINTF_SOURCE).
     int SaveCode() {
         std::string code;
 	GenerateCode(code);

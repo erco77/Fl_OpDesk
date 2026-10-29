@@ -37,7 +37,12 @@ MyConstantDialog::MyConstantDialog(MyButton *butt) : Fl_Double_Window(250,50) {
 void MyConstantDialog::show() {
     std::string const_value = butt->GetConstantValue();
     input->value(const_value.c_str());
-    input->position(0,999);					// select all text
+    // Select all text, using the renamed API on FLTK 1.4 and later.
+#if FL_API_VERSION >= 10400
+    input->insert_position(0,input->size());
+#else
+    input->position(0,input->size());
+#endif
     position(Fl::event_x_root()-10, Fl::event_y_root()-20);	// position window near mouse
     Fl_Double_Window::show();
 }

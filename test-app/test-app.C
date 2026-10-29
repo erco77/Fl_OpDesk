@@ -328,33 +328,32 @@ class App : public Fl_Double_Window {
 public:
     App(int W, int H, const char *L=0) : Fl_Double_Window(W,H,L) {
         // Create app's menubar
-	int i;
 	menubar = new Fl_Menu_Bar(0,0,w(),20);
 	menubar->box(FL_FLAT_BOX);
-	i = menubar->add("&File/&New",                       0,		Menu_CB, (void*)this);
-	i = menubar->add("&File/&Open",                      0,		Menu_CB, (void*)this, FL_MENU_DIVIDER);
-	i = menubar->add("&File/&Save",                      "^s",	Menu_CB, (void*)this);
-	i = menubar->add("&File/Save &As",                   0,		Menu_CB, (void*)this, FL_MENU_DIVIDER);
-	i = menubar->add("&File/Save &Code",                 "+^S",	Menu_CB, (void*)this);
-	i = menubar->add("&File/&Quit",                      "^q",	Menu_CB, (void*)this);
-	i = menubar->add("&Edit/Copy",                       "^c",	Menu_CB, (void*)this);
-	i = menubar->add("&Edit/Cut",                        "^x",	Menu_CB, (void*)this);
-	i = menubar->add("&Edit/Paste",                      "^v",	Menu_CB, (void*)this);
-	i = menubar->add("&Edit/Select All",                 "^a",	Menu_CB, (void*)this);
-	i = menubar->add("&Edit/Preferences/Lines/Trace",    0,		Menu_CB, (void*)this);
-	i = menubar->add("&Edit/Preferences/Lines/Curved",   0,		Menu_CB, (void*)this);
-	i = menubar->add("&Edit/Preferences/Lines/Straight", 0,		Menu_CB, (void*)this);
-	i = menubar->add("&Edit/Preferences/Debug",          0,         Menu_CB, (void*)this, FL_MENU_TOGGLE);	// off by default
-	i = menubar->add("&Operators/&Add",                  0,		Menu_CB, (void*)this);
-	i = menubar->add("&Operators/&Mult",                 0,		Menu_CB, (void*)this);
-	i = menubar->add("&Operators/&Strcat",               0,		Menu_CB, (void*)this);
-	i = menubar->add("&Operators/&Print",                0,		Menu_CB, (void*)this);
-	i = menubar->add("Functions/&Ramp",                  0,		Menu_CB, (void*)this, FL_MENU_INACTIVE);
-	i = menubar->add("Functions/&Sin",                   0,		Menu_CB, (void*)this);
-	i = menubar->add("Functions/&Cos",                   0,		Menu_CB, (void*)this);
-	i = menubar->add("Display/Graph",                    0,		Menu_CB, (void*)this, FL_MENU_INACTIVE); 
-	i = menubar->add("&Test/Make Test Boxes",            0,		Menu_CB, (void*)this); 
-	i = menubar->add("&Run/Compile + Run",               FL_F+4,	Menu_CB, (void*)this); 
+	menubar->add("&File/&New",                       0,		Menu_CB, (void*)this);
+	menubar->add("&File/&Open",                      0,		Menu_CB, (void*)this, FL_MENU_DIVIDER);
+	menubar->add("&File/&Save",                      "^s",	Menu_CB, (void*)this);
+	menubar->add("&File/Save &As",                   0,		Menu_CB, (void*)this, FL_MENU_DIVIDER);
+	menubar->add("&File/Save &Code",                 "+^S",	Menu_CB, (void*)this);
+	menubar->add("&File/&Quit",                      "^q",	Menu_CB, (void*)this);
+	menubar->add("&Edit/Copy",                       "^c",	Menu_CB, (void*)this);
+	menubar->add("&Edit/Cut",                        "^x",	Menu_CB, (void*)this);
+	menubar->add("&Edit/Paste",                      "^v",	Menu_CB, (void*)this);
+	menubar->add("&Edit/Select All",                 "^a",	Menu_CB, (void*)this);
+	menubar->add("&Edit/Preferences/Lines/Trace",    0,		Menu_CB, (void*)this);
+	menubar->add("&Edit/Preferences/Lines/Curved",   0,		Menu_CB, (void*)this);
+	menubar->add("&Edit/Preferences/Lines/Straight", 0,		Menu_CB, (void*)this);
+	menubar->add("&Edit/Preferences/Debug",          0,         Menu_CB, (void*)this, FL_MENU_TOGGLE);	// off by default
+	menubar->add("&Operators/&Add",                  0,		Menu_CB, (void*)this);
+	menubar->add("&Operators/&Mult",                 0,		Menu_CB, (void*)this);
+	menubar->add("&Operators/&Strcat",               0,		Menu_CB, (void*)this);
+	menubar->add("&Operators/&Print",                0,		Menu_CB, (void*)this);
+	menubar->add("Functions/&Ramp",                  0,		Menu_CB, (void*)this, FL_MENU_INACTIVE);
+	menubar->add("Functions/&Sin",                   0,		Menu_CB, (void*)this);
+	menubar->add("Functions/&Cos",                   0,		Menu_CB, (void*)this);
+	menubar->add("Display/Graph",                    0,		Menu_CB, (void*)this, FL_MENU_INACTIVE);
+	menubar->add("&Test/Make Test Boxes",            0,		Menu_CB, (void*)this);
+	menubar->add("&Run/Compile + Run",               FL_F+4,	Menu_CB, (void*)this);
 
 	// Create operations desk
 	mydesk = new MyDesk(10,20,w()-20,h()-30);
